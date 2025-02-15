@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "593076763440",
+    "project_id": "growell-app",
+    "storage_bucket": "growell-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:593076763440:android:0b9d1b7eab3d921500e6f5",
+        "android_client_info": {
+          "package_name": "com.example.growell_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdXLvw4DVGmkEWdvEdkseP4eFEzrHu2h4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
