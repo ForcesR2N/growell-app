@@ -1,44 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'home_page.dart';
 import 'profile_page.dart';
 
-class BottomNavigation extends StatefulWidget {
-  const BottomNavigation({super.key});
-
-  @override
-  State<BottomNavigation> createState() => _BottomNavigationState();
-}
-
-class _BottomNavigationState extends State<BottomNavigation> {
-  int _selectedIndex = 0;
-  
-  final List<Widget> _pages = [
-    const HomePage(),
-    const ProfilePage(),
-  ];
+class BottomNavigation extends StatelessWidget {
+  const BottomNavigation({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final RxInt currentIndex = 0.obs;
+
     return Scaffold(
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
+      body: Obx(() => IndexedStack(
+        index: currentIndex.value,
+        children: const [
+          HomePage(),
+          ProfilePage(),
+        ],
+      )),
+      bottomNavigationBar: Obx(() => BottomNavigationBar(
+        currentIndex: currentIndex.value,
+        onTap: (index) => currentIndex.value = index,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
             label: 'Profile',
           ),
         ],
-      ),
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
+      )),
     );
   }
 }
