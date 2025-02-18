@@ -1,7 +1,9 @@
 import 'package:get/get.dart';
 import 'package:growell_app/bindings/auth_binding.dart';
+import 'package:growell_app/bindings/edit_profile_binding.dart';
 import 'package:growell_app/bindings/onBoarding_binding.dart';
 import 'package:growell_app/pages/bottom_navigation.dart';
+import 'package:growell_app/pages/edit_profile_page.dart';
 import 'package:growell_app/pages/login_page.dart';
 import 'package:growell_app/pages/onBoarding_page.dart';
 
@@ -11,6 +13,7 @@ abstract class Routes {
   static const ONBOARDING = '/onboarding';
   static const HOME = '/home';
   static const DATA_CHECK = '/data-check';
+  static const EDIT_PROFILE = '/edit-profile';
 }
 
 class AppPages {
@@ -35,6 +38,12 @@ class AppPages {
       name: Routes.HOME,
       page: () => const BottomNavigation(),
       transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: Routes.EDIT_PROFILE,
+      page: () => const EditProfilePage(),
+      binding: EditProfileBinding(),
+      transition: Transition.rightToLeft,
     ),
   ];
 }
