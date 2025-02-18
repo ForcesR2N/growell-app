@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:growell_app/auth/controllers/auth_service.dart';
-import '../../../routes/app_pages.dart';
 
 class AuthController extends GetxController {
   final AuthService _authService = Get.find();
@@ -10,19 +9,23 @@ class AuthController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxBool isLogin = true.obs;
   final RxBool isPasswordVisible = false.obs;
+  final RxBool isConfirmPasswordVisible = false.obs;
   final RxString errorMessage = ''.obs;
-  
+
   final RxString emailError = ''.obs;
   final RxString passwordError = ''.obs;
+  final RxString confirmPasswordError = ''.obs;
 
   late final TextEditingController emailController;
   late final TextEditingController passwordController;
+  late final TextEditingController confirmPasswordController;
 
   @override
   void onInit() {
     super.onInit();
     emailController = TextEditingController();
     passwordController = TextEditingController();
+    confirmPasswordController = TextEditingController();
     errorMessage.value = '';
   }
 
@@ -30,17 +33,21 @@ class AuthController extends GetxController {
   void onClose() {
     emailController.dispose();
     passwordController.dispose();
+    confirmPasswordController.dispose();
     super.onClose();
   }
 
   void togglePasswordVisibility() => isPasswordVisible.toggle();
+  void toggleConfirmPasswordVisibility() => isConfirmPasswordVisible.toggle();
 
   void clearForm() {
     emailController.clear();
     passwordController.clear();
+    confirmPasswordController.clear();
     errorMessage.value = '';
     emailError.value = '';
     passwordError.value = '';
+    confirmPasswordError.value = '';
   }
 
   void toggleAuthMode() {
@@ -50,7 +57,8 @@ class AuthController extends GetxController {
 
   bool validateForm() {
     bool isValid = true;
-    
+
+    // Validate email
     if (emailController.text.isEmpty) {
       emailError.value = 'Email tidak boleh kosong';
       isValid = false;
@@ -61,6 +69,7 @@ class AuthController extends GetxController {
       emailError.value = '';
     }
 
+    // Validate password
     if (passwordController.text.isEmpty) {
       passwordError.value = 'Password tidak boleh kosong';
       isValid = false;
@@ -69,6 +78,19 @@ class AuthController extends GetxController {
       isValid = false;
     } else {
       passwordError.value = '';
+    }
+
+    // Validate confirm password for registration
+    if (!isLogin.value) {
+      if (confirmPasswordController.text.isEmpty) {
+        confirmPasswordError.value = 'Konfirmasi password tidak boleh kosong';
+        isValid = false;
+      } else if (confirmPasswordController.text != passwordController.text) {
+        confirmPasswordError.value = 'Password tidak cocok';
+        isValid = false;
+      } else {
+        confirmPasswordError.value = '';
+      }
     }
 
     return isValid;
@@ -94,7 +116,8 @@ class AuthController extends GetxController {
 
       if (result != null) {
         clearForm();
-        Get.offAllNamed(Routes.DATA_CHECK);
+        // Instead of immediately navigating, wait for AuthService to handle the navigation
+        await Future.delayed(const Duration(milliseconds: 500));
       }
     } on FirebaseAuthException catch (e) {
       handleFirebaseError(e);
@@ -133,7 +156,8 @@ class AuthController extends GetxController {
         errorMessage.value = 'Koneksi internet bermasalah';
         break;
       case 'too-many-requests':
-        errorMessage.value = 'Terlalu banyak percobaan. Silakan coba lagi nanti';
+        errorMessage.value =
+            'Terlalu banyak percobaan. Silakan coba lagi nanti';
         break;
       default:
         errorMessage.value = 'Terjadi kesalahan: ${e.message}';

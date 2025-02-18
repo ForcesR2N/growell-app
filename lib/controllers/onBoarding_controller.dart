@@ -8,10 +8,10 @@ import '../routes/app_pages.dart';
 class OnboardingController extends GetxController {
   final AuthService _authService = Get.find();
   final StorageService _storageService = Get.find();
-  
+
   final pageController = PageController();
   final currentPage = 0.obs;
-  
+
   final name = ''.obs;
   final age = 0.obs;
   final weight = 0.0.obs;
@@ -53,9 +53,27 @@ class OnboardingController extends GetxController {
     }
   }
 
+  void showValidationError(String message) {
+    Get.snackbar(
+      'Validasi',
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.red[100],
+      colorText: Colors.red[900],
+      duration: const Duration(seconds: 2),
+      margin: const EdgeInsets.all(10),
+      borderRadius: 10,
+      isDismissible: true,
+      icon: const Icon(
+        Icons.error_outline,
+        color: Colors.red,
+      ),
+    );
+  }
+
   bool validateCurrentPage() {
     clearErrors();
-    
+
     switch (currentPage.value) {
       case 0:
         if (name.value.isEmpty) {
@@ -63,18 +81,25 @@ class OnboardingController extends GetxController {
           return false;
         }
         return true;
-        
-      case 1:
+
+      case 1: // Validasi usia
         if (age.value <= 0) {
-          ageError.value = 'Usia harus lebih dari 0 bulan';
+          ageError.value = 'Masukkan usia bayi yang valid';
+          showValidationError('Masukkan usia bayi yang valid');
+          return false;
+        }
+        if (age.value < 1) {
+          ageError.value = 'Usia minimal 1 bulan';
+          showValidationError('Usia minimal 1 bulan');
           return false;
         }
         if (age.value > 24) {
           ageError.value = 'Usia maksimal 24 bulan';
+          showValidationError('Usia maksimal 24 bulan');
           return false;
         }
         return true;
-        
+
       case 2:
         if (weight.value <= 0) {
           weightError.value = 'Berat badan harus lebih dari 0 kg';
@@ -85,19 +110,19 @@ class OnboardingController extends GetxController {
           return false;
         }
         return true;
-        
+
       case 3: // Gender
-        return true; 
-        
+        return true;
+
       case 4: // Meals per day
         return mealsPerDay.value >= 2 && mealsPerDay.value <= 6;
-        
+
       case 5: // Allergy
-        return true; 
-        
+        return true;
+
       case 6: // Activity level
         return activityLevel.value >= 1 && activityLevel.value <= 10;
-        
+
       default:
         return false;
     }

@@ -18,64 +18,107 @@ class LoginPage extends GetView<AuthController> {
             children: [
               const SizedBox(height: 50),
               Obx(() => Text(
-                controller.isLogin.value
-                    ? 'Selamat Datang\nKembali!'
-                    : 'Mari Mulai\nPerjalanan!',
-                style: Get.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              )),
-              const SizedBox(height: 30),
-              Obx(() => TextField(
-                controller: controller.emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: const Icon(Icons.email_outlined),
-                  errorText: controller.emailError.value.isEmpty 
-                      ? null 
-                      : controller.emailError.value,
-                ),
-                keyboardType: TextInputType.emailAddress,
-                onChanged: (_) => controller.emailError.value = '',
-              )),
-              const SizedBox(height: 16),
-              Obx(() => TextField(
-                controller: controller.passwordController,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  errorText: controller.passwordError.value.isEmpty 
-                      ? null 
-                      : controller.passwordError.value,
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      controller.isPasswordVisible.value
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
+                    controller.isLogin.value
+                        ? 'Selamat Datang\nKembali!'
+                        : 'Mari Mulai\nPerjalanan!',
+                    style: Get.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                    onPressed: controller.togglePasswordVisibility,
-                  ),
-                ),
-                obscureText: !controller.isPasswordVisible.value,
-                onChanged: (_) => controller.passwordError.value = '',
-              )),
-              const SizedBox(height: 24),
-              Obx(() => CustomButton(
-                text: controller.isLogin.value ? 'Masuk' : 'Daftar',
-                onPressed: () => controller.handleAuth(),
-                isLoading: controller.isLoading.value,
-              )),
+                  )),
+              const SizedBox(height: 30),
+
+              // Email Field
+              Obx(() => TextField(
+                    controller: controller.emailController,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      prefixIcon: const Icon(Icons.email_outlined),
+                      errorText: controller.emailError.value.isEmpty
+                          ? null
+                          : controller.emailError.value,
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    onChanged: (_) => controller.emailError.value = '',
+                  )),
               const SizedBox(height: 16),
+
+              // Password Field
+              Obx(() => TextField(
+                    controller: controller.passwordController,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      errorText: controller.passwordError.value.isEmpty
+                          ? null
+                          : controller.passwordError.value,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          controller.isPasswordVisible.value
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                        ),
+                        onPressed: controller.togglePasswordVisibility,
+                      ),
+                    ),
+                    obscureText: !controller.isPasswordVisible.value,
+                    onChanged: (_) => controller.passwordError.value = '',
+                  )),
+              const SizedBox(height: 16),
+
+              // Confirm Password Field (only for registration)
+              Obx(() => controller.isLogin.value
+                  ? const SizedBox.shrink()
+                  : Column(
+                      children: [
+                        TextField(
+                          controller: controller.confirmPasswordController,
+                          decoration: InputDecoration(
+                            labelText: 'Konfirmasi Password',
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            errorText:
+                                controller.confirmPasswordError.value.isEmpty
+                                    ? null
+                                    : controller.confirmPasswordError.value,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                controller.isConfirmPasswordVisible.value
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                              ),
+                              onPressed:
+                                  controller.toggleConfirmPasswordVisibility,
+                            ),
+                          ),
+                          obscureText:
+                              !controller.isConfirmPasswordVisible.value,
+                          onChanged: (_) =>
+                              controller.confirmPasswordError.value = '',
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    )),
+
+              // Login/Register Button
+              Obx(() => CustomButton(
+                    text: controller.isLogin.value ? 'Masuk' : 'Daftar',
+                    onPressed: () => controller.handleAuth(),
+                    isLoading: controller.isLoading.value,
+                  )),
+              const SizedBox(height: 16),
+
+              // Toggle Login/Register Mode
               Center(
                 child: TextButton(
                   onPressed: controller.toggleAuthMode,
                   child: Obx(() => Text(
-                    controller.isLogin.value
-                        ? 'Belum punya akun? Daftar'
-                        : 'Sudah punya akun? Masuk',
-                  )),
+                        controller.isLogin.value
+                            ? 'Belum punya akun? Daftar'
+                            : 'Sudah punya akun? Masuk',
+                      )),
                 ),
               ),
+
+              // Error Message
               Obx(() => controller.errorMessage.value.isNotEmpty
                   ? Padding(
                       padding: const EdgeInsets.only(top: 16),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:growell_app/controllers/onBoarding_controller.dart';
 import 'package:growell_app/widgets/app_values.dart';
@@ -24,7 +25,6 @@ class OnboardingPage extends GetView<OnboardingController> {
                 ),
               ),
             ),
-
             Expanded(
               child: PageView(
                 controller: controller.pageController,
@@ -41,7 +41,6 @@ class OnboardingPage extends GetView<OnboardingController> {
                 ],
               ),
             ),
-
             Container(
               padding: const EdgeInsets.all(AppValues.padding),
               child: Row(
@@ -55,16 +54,13 @@ class OnboardingPage extends GetView<OnboardingController> {
                           label: const Text('Kembali'),
                         )
                       : const SizedBox(width: 100)),
-                  Obx(() {
-                    bool isValid = controller.validateCurrentPage();
-                    return CustomButton(
-                      width: 120,
-                      text: controller.currentPage.value < 6
-                          ? 'Lanjut'
-                          : 'Selesai',
-                      onPressed: isValid ? () => controller.nextPage() : null,
-                    );
-                  }),
+                  Obx(() => CustomButton(
+                        width: 120,
+                        text: controller.currentPage.value < 6
+                            ? 'Lanjut'
+                            : 'Selesai',
+                        onPressed: () => controller.nextPage(),
+                      )),
                 ],
               ),
             ),
@@ -84,7 +80,7 @@ class OnboardingPage extends GetView<OnboardingController> {
             onChanged: (value) => controller.name.value = value,
             decoration: const InputDecoration(
               labelText: 'Nama Bayi',
-              hintText: 'Contoh: Muhammad Azzam',
+              hintText: 'Contoh: Cantika Minji',
             ),
             textCapitalization: TextCapitalization.words,
           ),
@@ -103,7 +99,7 @@ class OnboardingPage extends GetView<OnboardingController> {
   Widget _buildAgePage() {
     return OnboardingWidget(
       title: 'Berapa usia si kecil?',
-      subtitle: 'Masukkan usia dalam bulan (0-24 bulan)',
+      subtitle: 'Masukkan usia dalam bulan (1-24 bulan)',
       child: Column(
         children: [
           Row(
@@ -112,26 +108,105 @@ class OnboardingPage extends GetView<OnboardingController> {
                 child: TextField(
                   keyboardType: TextInputType.number,
                   onChanged: (value) {
+                    if (value.isEmpty) {
+                      controller.age.value = 0;
+                      controller.ageError.value = '';
+                      return;
+                    }
+
+                    // Simpan nilai input tanpa modifikasi
                     final age = int.tryParse(value) ?? 0;
-                    controller.age.value = age > 24 ? 24 : age;
+                    controller.age.value = age;
+                    controller.ageError.value = '';
                   },
-                  decoration: const InputDecoration(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(2),
+                  ],
+                  decoration: InputDecoration(
                     labelText: 'Usia',
                     suffixText: 'bulan',
+                    hintText: '1-24',
+                    errorText: controller.ageError.value.isEmpty
+                        ? null
+                        : controller.ageError.value,
+                    border: const OutlineInputBorder(),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 16,
+                    ),
                   ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          Obx(() => Text(
-                controller.age.value == 0
-                    ? 'Silakan masukkan usia bayi'
-                    : controller.age.value > 24
-                        ? 'Maksimal usia 24 bulan'
-                        : 'Usia ${controller.age.value} bulan',
-                style: Get.textTheme.bodyLarge,
-              )),
+          Obx(() {
+            if (controller.age.value == 0) {
+              return const Text(
+                'Silakan masukkan usia bayi (1-24 bulan)',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 14,
+                ),
+              );
+            }
+
+            // Tampilkan pesan berbeda untuk usia tidak valid
+            if (controller.age.value > 24) {
+              return Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red[50],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: Colors.red[700],
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Usia tidak valid (maksimal 24 bulan)',
+                      style: TextStyle(
+                        color: Colors.red[700],
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            return Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue[50],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.child_care,
+                    color: Colors.blue[700],
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Usia ${controller.age.value} bulan',
+                    style: TextStyle(
+                      color: Colors.blue[700],
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
         ],
       ),
     );
