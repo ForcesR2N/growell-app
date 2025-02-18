@@ -6,14 +6,7 @@ import 'package:growell_app/routes/app_pages.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  try {
-    await Firebase.initializeApp();
-    debugPrint('🔥 Firebase successfully connected!');
-  } catch (e) {
-    debugPrint('❌ Firebase connection failed: $e');
-  }
-
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
