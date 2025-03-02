@@ -17,7 +17,7 @@ class _HomePageState extends State<HomePage> {
 
   final List<Map<String, dynamic>> menuCards = [
     {
-      'id': 'ageGroup_0_6', 
+      'id': 'ageGroup_0_6',
       'title': 'ASI Eksklusif',
       'subtitle': '0-6 bulan',
       'gradient': const [Color(0xFFFF9966), Color(0xFFFF5E62)],
@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
       'isActive': true,
     },
     {
-      'id': 'ageGroup_6',   
+      'id': 'ageGroup_6',
       'title': 'Awal MPASI',
       'subtitle': '6 bulan',
       'gradient': const [Color(0xFF4E65FF), Color(0xFF92EFFD)],
@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
       'isActive': true,
     },
     {
-      'id': 'ageGroup_7_12', 
+      'id': 'ageGroup_7_12',
       'title': 'Variasi MPASI',
       'subtitle': '7-12 bulan',
       'gradient': const [Color(0xFF736EFE), Color(0xFF62E4EC)],
@@ -41,14 +41,14 @@ class _HomePageState extends State<HomePage> {
       'isActive': true,
     },
     {
-      'id': 'ageGroup_13_24', 
+      'id': 'ageGroup_13_24',
       'title': 'Makanan Keluarga',
       'subtitle': '13-24 bulan',
       'gradient': const [Color(0xFFFF6B95), Color(0xFFFF5ED3)],
       'icon': Icons.family_restroom,
       'isActive': true,
     },
-];
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -90,9 +90,7 @@ class _HomePageState extends State<HomePage> {
                     );
                   },
                 ),
-
                 const SizedBox(height: 24),
-
                 const Text(
                   'Pilih Panduan Makanan',
                   style: TextStyle(
@@ -101,10 +99,8 @@ class _HomePageState extends State<HomePage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-
                 const SizedBox(height: 16),
-
-            ...menuCards.map((card) => _buildMenuCard(
+                ...menuCards.map((card) => _buildMenuCard(
                       title: card['title'],
                       subtitle: card['subtitle'],
                       gradient: card['gradient'],
