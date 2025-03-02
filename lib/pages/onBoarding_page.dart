@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:growell_app/controllers/onBoarding_controller.dart';
-import 'package:growell_app/widgets/app_values.dart';
-import 'package:growell_app/widgets/custom_button.dart';
-import 'package:growell_app/widgets/onBoarding_widget.dart';
 import 'package:growell_app/components/onboarding_input.dart';
 import 'package:growell_app/components/onboarding_progress.dart';
 
