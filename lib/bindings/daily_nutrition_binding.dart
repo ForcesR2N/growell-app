@@ -4,6 +4,6 @@ import '../controllers/daily_nutrition_controller.dart';
 class DailyNutritionBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<DailyNutritionController>(() => DailyNutritionController());
+    Get.put<DailyNutritionController>(DailyNutritionController(), permanent: true);
   }
 }

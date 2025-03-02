@@ -38,6 +38,9 @@ dependencies:
   firebase_auth: ^5.4.0
   cloud_firestore: ^5.6.3
   get: ^4.7.2
+  percent_indicator: ^4.2.4
+  intl: ^0.20.2
+  shared_preferences: ^2.5.2
 
 dev_dependencies:
   flutter_test:
