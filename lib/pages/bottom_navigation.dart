@@ -10,8 +10,6 @@ class BottomNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final RxInt currentIndex = 0.obs;
-    final size = MediaQuery.of(context).size;
-    final isSmallScreen = size.width < 360;
 
     return Scaffold(
       body: Obx(() => IndexedStack(
@@ -23,100 +21,52 @@ class BottomNavigation extends StatelessWidget {
             ],
           )),
       bottomNavigationBar: Obx(() => Container(
+            margin:
+                const EdgeInsets.all(4), // Biar nggak nempel ke bawah/samping
             decoration: BoxDecoration(
               color: Colors.white,
+              borderRadius: BorderRadius.circular(10), // Rounded navbar
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withOpacity(0.1), // Efek shadow halus
                   blurRadius: 10,
-                  offset: const Offset(0, -5),
+                  spreadRadius: 2,
                 ),
               ],
             ),
-            child: SafeArea(
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: isSmallScreen ? 16 : 24,
-                  vertical: 12,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildNavItem(
-                      currentIndex.value == 0,
-                      Icons.home_outlined,
-                      Icons.home_rounded,
-                      'Beranda',
-                      () => currentIndex.value = 0,
-                      isSmallScreen,
-                    ),
-                    _buildNavItem(
-                      currentIndex.value == 1,
-                      Icons.restaurant_menu_outlined,
-                      Icons.restaurant_menu_rounded,
-                      'Daily',
-                      () => currentIndex.value = 1,
-                      isSmallScreen,
-                    ),
-                    _buildNavItem(
-                      currentIndex.value == 2,
-                      Icons.person_outline_rounded,
-                      Icons.person_rounded,
-                      'Profile',
-                      () => currentIndex.value = 2,
-                      isSmallScreen,
-                    ),
-                  ],
-                ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: BottomNavigationBar(
+                type: BottomNavigationBarType.fixed,
+                backgroundColor: Colors.white,
+                elevation: 0, // Hilangin default shadow bawaan
+                currentIndex: currentIndex.value,
+                onTap: (index) => currentIndex.value = index,
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home_outlined),
+                    activeIcon: Icon(Icons.home,
+                        size: 28), // Icon lebih besar saat aktif
+                    label: 'Home',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.food_bank_outlined),
+                    activeIcon: Icon(Icons.food_bank, size: 28),
+                    label: 'Daily',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.person_outline),
+                    activeIcon: Icon(Icons.person, size: 28),
+                    label: 'Profile',
+                  ),
+                ],
+                selectedItemColor: Color(0xFF91C788),
+                unselectedItemColor: Colors.grey,
+                selectedFontSize: 14, // Ukuran teks yang aktif
+                unselectedFontSize: 12,
               ),
             ),
           )),
-    );
-  }
-
-  Widget _buildNavItem(
-      bool isSelected,
-      IconData inactiveIcon,
-      IconData activeIcon,
-      String label,
-      VoidCallback onTap,
-      bool isSmallScreen) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: isSmallScreen ? 12 : 16,
-          vertical: 8,
-        ),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF91C788).withOpacity(0.1) : null,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              isSelected ? activeIcon : inactiveIcon,
-              color: isSelected
-                  ? const Color(0xFF91C788)
-                  : const Color(0xFF6F6F6F),
-              size: isSmallScreen ? 24 : 28,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: isSelected
-                    ? const Color(0xFF91C788)
-                    : const Color(0xFF6F6F6F),
-                fontSize: isSmallScreen ? 12 : 14,
-                fontFamily: 'Signika',
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
