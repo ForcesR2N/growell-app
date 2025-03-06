@@ -10,6 +10,8 @@ class BottomNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final RxInt currentIndex = 0.obs;
+    final size = MediaQuery.of(context).size;
+    final isSmallScreen = size.width < 360;
 
     return Scaffold(
       body: Obx(() => IndexedStack(
@@ -20,29 +22,101 @@ class BottomNavigation extends StatelessWidget {
               ProfilePage(),
             ],
           )),
-      bottomNavigationBar: Obx(() => BottomNavigationBar(
-            currentIndex: currentIndex.value,
-            onTap: (index) => currentIndex.value = index,
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home_outlined),
-                activeIcon: Icon(Icons.home),
-                label: 'Home',
+      bottomNavigationBar: Obx(() => Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, -5),
+                ),
+              ],
+            ),
+            child: SafeArea(
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: isSmallScreen ? 16 : 24,
+                  vertical: 12,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildNavItem(
+                      currentIndex.value == 0,
+                      Icons.home_outlined,
+                      Icons.home_rounded,
+                      'Beranda',
+                      () => currentIndex.value = 0,
+                      isSmallScreen,
+                    ),
+                    _buildNavItem(
+                      currentIndex.value == 1,
+                      Icons.restaurant_menu_outlined,
+                      Icons.restaurant_menu_rounded,
+                      'Daily',
+                      () => currentIndex.value = 1,
+                      isSmallScreen,
+                    ),
+                    _buildNavItem(
+                      currentIndex.value == 2,
+                      Icons.person_outline_rounded,
+                      Icons.person_rounded,
+                      'Profile',
+                      () => currentIndex.value = 2,
+                      isSmallScreen,
+                    ),
+                  ],
+                ),
               ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.food_bank_outlined),
-                activeIcon: Icon(Icons.food_bank),
-                label: 'Daily',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person_outline),
-                activeIcon: Icon(Icons.person),
-                label: 'Profile',
-              ),
-            ],
-            selectedItemColor: Colors.blue,
-            unselectedItemColor: Colors.grey,
+            ),
           )),
+    );
+  }
+
+  Widget _buildNavItem(
+      bool isSelected,
+      IconData inactiveIcon,
+      IconData activeIcon,
+      String label,
+      VoidCallback onTap,
+      bool isSmallScreen) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: isSmallScreen ? 12 : 16,
+          vertical: 8,
+        ),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF91C788).withOpacity(0.1) : null,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isSelected ? activeIcon : inactiveIcon,
+              color: isSelected
+                  ? const Color(0xFF91C788)
+                  : const Color(0xFF6F6F6F),
+              size: isSmallScreen ? 24 : 28,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected
+                    ? const Color(0xFF91C788)
+                    : const Color(0xFF6F6F6F),
+                fontSize: isSmallScreen ? 12 : 14,
+                fontFamily: 'Signika',
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

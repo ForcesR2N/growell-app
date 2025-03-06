@@ -11,13 +11,13 @@ class DailyNutritionController extends GetxController {
   final targetProtein = 0.0.obs;
   final targetCarbs = 0.0.obs;
   final targetFat = 0.0.obs;
-  
+
   // Nutrisi yang sudah dikonsumsi
   final consumedCalories = 0.0.obs;
   final consumedProtein = 0.0.obs;
   final consumedCarbs = 0.0.obs;
   final consumedFat = 0.0.obs;
-  
+
   // Loading state
   final isLoading = false.obs;
   final isSaving = false.obs;
@@ -32,12 +32,12 @@ class DailyNutritionController extends GetxController {
 
   // Daftar makanan yang dikonsumsi hari ini
   final consumedFoods = <FoodNutrition>[].obs;
-  
+
   // Status berat badan
   final weightStatus = RxString('');
   final idealWeightLow = 0.0.obs;
   final idealWeightHigh = 0.0.obs;
-  
+
   // Tanggal hari ini
   final currentDate = DateTime.now().obs;
   final dateFormatted = RxString('');
@@ -47,7 +47,7 @@ class DailyNutritionController extends GetxController {
     super.onInit();
     // Format tanggal
     dateFormatted.value = DateFormat('dd MMMM yyyy').format(currentDate.value);
-    
+
     // Load data dari shared preferences
     loadSavedData();
   }
@@ -63,50 +63,52 @@ class DailyNutritionController extends GetxController {
   Future<void> loadSavedData() async {
     try {
       isLoading.value = true;
-      
+
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Load data nutrisi target
       targetCalories.value = prefs.getDouble('targetCalories') ?? 0.0;
       targetProtein.value = prefs.getDouble('targetProtein') ?? 0.0;
       targetCarbs.value = prefs.getDouble('targetCarbs') ?? 0.0;
       targetFat.value = prefs.getDouble('targetFat') ?? 0.0;
-      
+
       // Load data nutrisi yang dikonsumsi
       final savedDate = prefs.getString('nutritionDate') ?? '';
       final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
-      
+
       // Jika data yang tersimpan masih untuk hari ini, load data
       if (savedDate == today) {
         consumedCalories.value = prefs.getDouble('consumedCalories') ?? 0.0;
         consumedProtein.value = prefs.getDouble('consumedProtein') ?? 0.0;
         consumedCarbs.value = prefs.getDouble('consumedCarbs') ?? 0.0;
         consumedFat.value = prefs.getDouble('consumedFat') ?? 0.0;
-        
+
         // Load daftar makanan
         final foodsJson = prefs.getStringList('consumedFoods') ?? [];
-        final foods = foodsJson.map((item) => 
-          FoodNutrition.fromJson(json.decode(item))).toList();
+        final foods = foodsJson
+            .map((item) => FoodNutrition.fromJson(json.decode(item)))
+            .toList();
         consumedFoods.assignAll(foods);
       }
-      
+
       // Load data input user
       final savedAge = prefs.getString('inputAge') ?? '';
       final savedWeight = prefs.getString('inputWeight') ?? '';
-      
+
       if (savedAge.isNotEmpty) {
         ageController.text = savedAge;
       }
-      
+
       if (savedWeight.isNotEmpty) {
         weightController.text = savedWeight;
       }
-      
+
       // Jika ada data target, calculte status berat badan
-      if (targetCalories.value > 0 && savedAge.isNotEmpty && savedWeight.isNotEmpty) {
+      if (targetCalories.value > 0 &&
+          savedAge.isNotEmpty &&
+          savedWeight.isNotEmpty) {
         calculateWeightStatus(int.parse(savedAge), double.parse(savedWeight));
       }
-      
     } catch (e) {
       Get.snackbar(
         'Error',
@@ -123,39 +125,38 @@ class DailyNutritionController extends GetxController {
   Future<void> saveData() async {
     try {
       isSaving.value = true;
-      
+
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Simpan target nutrisi
       prefs.setDouble('targetCalories', targetCalories.value);
       prefs.setDouble('targetProtein', targetProtein.value);
       prefs.setDouble('targetCarbs', targetCarbs.value);
       prefs.setDouble('targetFat', targetFat.value);
-      
+
       // Simpan nutrisi yang dikonsumsi
       prefs.setDouble('consumedCalories', consumedCalories.value);
       prefs.setDouble('consumedProtein', consumedProtein.value);
       prefs.setDouble('consumedCarbs', consumedCarbs.value);
       prefs.setDouble('consumedFat', consumedFat.value);
-      
+
       // Simpan tanggal
       final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
       prefs.setString('nutritionDate', today);
-      
+
       // Simpan daftar makanan
-      final foodsJson = consumedFoods.map((food) => 
-        json.encode(food.toJson())).toList();
+      final foodsJson =
+          consumedFoods.map((food) => json.encode(food.toJson())).toList();
       prefs.setStringList('consumedFoods', foodsJson);
-      
+
       // Simpan input user
       if (ageController.text.isNotEmpty) {
         prefs.setString('inputAge', ageController.text);
       }
-      
+
       if (weightController.text.isNotEmpty) {
         prefs.setString('inputWeight', weightController.text);
       }
-      
     } catch (e) {
       Get.snackbar(
         'Error',
@@ -172,36 +173,35 @@ class DailyNutritionController extends GetxController {
   void calculateRequirements(String age, String weight) {
     try {
       isLoading.value = true;
-      
+
       // Validate input
       if (!_validateInput(age, weight)) return;
-      
+
       final ageInMonths = int.parse(age);
       final weightInKg = double.parse(weight);
 
       if (ageInMonths <= 6) {
-        targetCalories.value = weightInKg * 115;  // 110-120 kcal/kg/hari
-        targetProtein.value = weightInKg * 2.2;   // 2.2g/kg/hari
-        targetCarbs.value = weightInKg * 12;      // 12g/kg/hari
-        targetFat.value = weightInKg * 6;         // 6g/kg/hari
+        targetCalories.value = weightInKg * 115; // 110-120 kcal/kg/hari
+        targetProtein.value = weightInKg * 2.2; // 2.2g/kg/hari
+        targetCarbs.value = weightInKg * 12; // 12g/kg/hari
+        targetFat.value = weightInKg * 6; // 6g/kg/hari
       } else if (ageInMonths <= 12) {
-        targetCalories.value = weightInKg * 105;  // 100-110 kcal/kg/hari
-        targetProtein.value = weightInKg * 1.6;   // 1.6g/kg/hari
-        targetCarbs.value = weightInKg * 14;      // 14g/kg/hari
-        targetFat.value = weightInKg * 5;         // 5g/kg/hari
+        targetCalories.value = weightInKg * 105; // 100-110 kcal/kg/hari
+        targetProtein.value = weightInKg * 1.6; // 1.6g/kg/hari
+        targetCarbs.value = weightInKg * 14; // 14g/kg/hari
+        targetFat.value = weightInKg * 5; // 5g/kg/hari
       } else {
-        targetCalories.value = weightInKg * 95;   // 90-100 kcal/kg/hari
-        targetProtein.value = weightInKg * 1.2;   // 1.2g/kg/hari
-        targetCarbs.value = weightInKg * 16;      // 16g/kg/hari
-        targetFat.value = weightInKg * 4;         // 4g/kg/hari
+        targetCalories.value = weightInKg * 95; // 90-100 kcal/kg/hari
+        targetProtein.value = weightInKg * 1.2; // 1.2g/kg/hari
+        targetCarbs.value = weightInKg * 16; // 16g/kg/hari
+        targetFat.value = weightInKg * 4; // 4g/kg/hari
       }
-      
+
       // Hitung status berat badan
       calculateWeightStatus(ageInMonths, weightInKg);
-      
+
       // Simpan data
       saveData();
-      
     } catch (e) {
       Get.snackbar(
         'Error',
@@ -219,16 +219,16 @@ class DailyNutritionController extends GetxController {
     // Data WHO weight-for-age untuk anak laki-laki (digunakan sebagai estimasi umum)
     // Format: [usia dalam bulan, berat minimal (kg), berat maksimal (kg)]
     final weightChartData = [
-      [0, 2.9, 4.4],   // lahir
-      [1, 3.9, 5.8],   // 1 bulan
-      [2, 4.9, 7.1],   // 2 bulan
-      [3, 5.7, 8.0],   // 3 bulan
-      [4, 6.2, 8.7],   // 4 bulan
-      [5, 6.7, 9.3],   // 5 bulan
-      [6, 7.1, 9.8],   // 6 bulan
-      [7, 7.4, 10.3],  // 7 bulan
-      [8, 7.7, 10.7],  // 8 bulan
-      [9, 8.0, 11.0],  // 9 bulan
+      [0, 2.9, 4.4], // lahir
+      [1, 3.9, 5.8], // 1 bulan
+      [2, 4.9, 7.1], // 2 bulan
+      [3, 5.7, 8.0], // 3 bulan
+      [4, 6.2, 8.7], // 4 bulan
+      [5, 6.7, 9.3], // 5 bulan
+      [6, 7.1, 9.8], // 6 bulan
+      [7, 7.4, 10.3], // 7 bulan
+      [8, 7.7, 10.7], // 8 bulan
+      [9, 8.0, 11.0], // 9 bulan
       [10, 8.2, 11.4], // 10 bulan
       [11, 8.4, 11.7], // 11 bulan
       [12, 8.6, 12.0], // 12 bulan
@@ -237,7 +237,7 @@ class DailyNutritionController extends GetxController {
       [21, 10.3, 14.3], // 21 bulan
       [24, 10.8, 15.0], // 24 bulan
     ];
-    
+
     // Cari data berat yang paling sesuai dengan usia
     var idealWeight = weightChartData.firstWhere(
       (data) => data[0] == ageInMonths,
@@ -248,31 +248,33 @@ class DailyNutritionController extends GetxController {
         } else {
           // Interpolasi linear untuk mendapatkan estimasi
           for (int i = 0; i < weightChartData.length - 1; i++) {
-            if (ageInMonths > weightChartData[i][0] && ageInMonths < weightChartData[i+1][0]) {
+            if (ageInMonths > weightChartData[i][0] &&
+                ageInMonths < weightChartData[i + 1][0]) {
               final lowerAge = weightChartData[i][0];
-              final upperAge = weightChartData[i+1][0];
+              final upperAge = weightChartData[i + 1][0];
               final ratio = (ageInMonths - lowerAge) / (upperAge - lowerAge);
-              
+
               final lowerMin = weightChartData[i][1];
-              final upperMin = weightChartData[i+1][1];
+              final upperMin = weightChartData[i + 1][1];
               final lowerMax = weightChartData[i][2];
-              final upperMax = weightChartData[i+1][2];
-              
+              final upperMax = weightChartData[i + 1][2];
+
               final interpolatedMin = lowerMin + (upperMin - lowerMin) * ratio;
               final interpolatedMax = lowerMax + (upperMax - lowerMax) * ratio;
-              
+
               return [ageInMonths, interpolatedMin, interpolatedMax];
             }
           }
-          return weightChartData.first; // default ke 0 bulan jika tidak ditemukan
+          return weightChartData
+              .first; // default ke 0 bulan jika tidak ditemukan
         }
       },
     );
-    
+
     // Set berat ideal
     idealWeightLow.value = idealWeight[1].toDouble();
     idealWeightHigh.value = idealWeight[2].toDouble();
-    
+
     // Tentukan status berat badan
     if (weightInKg < idealWeight[1]) {
       weightStatus.value = 'underweight';
@@ -299,32 +301,61 @@ class DailyNutritionController extends GetxController {
     try {
       final adjustedFood = food.adjustPortion(consumedPortion);
       consumedFoods.add(adjustedFood);
-      
+
       // Update total nutrisi
       consumedCalories.value += adjustedFood.calories;
       consumedProtein.value += adjustedFood.protein;
       consumedCarbs.value += adjustedFood.carbs;
       consumedFat.value += adjustedFood.fat;
 
-      // Check nutrisi dan beri peringatan jika perlu
-      checkNutritionStatus();
-      
       // Simpan data
       saveData();
 
-      Get.snackbar(
-        'Berhasil',
-        'Makanan berhasil ditambahkan',
-        backgroundColor: Colors.green[100],
-        colorText: Colors.green[900],
-      );
+      // Delay snackbar untuk menghindari konflik dengan dialog
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (Get.isSnackbarOpen) {
+          Get.closeCurrentSnackbar();
+        }
+        Get.showSnackbar(
+          GetSnackBar(
+            message: 'Makanan berhasil ditambahkan',
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.green.shade100,
+            messageText: Text(
+              'Makanan berhasil ditambahkan',
+              style: TextStyle(
+                color: Colors.green.shade900,
+                fontFamily: 'Signika',
+              ),
+            ),
+          ),
+        );
+      });
+
+      // Check nutrisi setelah delay
+      Future.delayed(const Duration(seconds: 1), () {
+        checkNutritionStatus();
+      });
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal menambahkan makanan: ${e.toString()}',
-        backgroundColor: Colors.red[100],
-        colorText: Colors.red[900],
-      );
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (Get.isSnackbarOpen) {
+          Get.closeCurrentSnackbar();
+        }
+        Get.showSnackbar(
+          GetSnackBar(
+            message: 'Gagal menambahkan makanan: ${e.toString()}',
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.red.shade100,
+            messageText: Text(
+              'Gagal menambahkan makanan: ${e.toString()}',
+              style: TextStyle(
+                color: Colors.red.shade900,
+                fontFamily: 'Signika',
+              ),
+            ),
+          ),
+        );
+      });
     }
   }
 
@@ -332,19 +363,19 @@ class DailyNutritionController extends GetxController {
   void removeFood(int index) {
     if (index >= 0 && index < consumedFoods.length) {
       final food = consumedFoods[index];
-      
+
       // Kurangi nutrisi
       consumedCalories.value -= food.calories;
       consumedProtein.value -= food.protein;
       consumedCarbs.value -= food.carbs;
       consumedFat.value -= food.fat;
-      
+
       // Hapus dari list
       consumedFoods.removeAt(index);
-      
+
       // Simpan data
       saveData();
-      
+
       Get.snackbar(
         'Berhasil',
         'Makanan dihapus dari daftar',
@@ -361,7 +392,8 @@ class DailyNutritionController extends GetxController {
       final result = await Get.dialog<bool>(
         AlertDialog(
           title: const Text('Reset Data Harian'),
-          content: const Text('Apakah Anda yakin ingin menghapus semua data makanan yang sudah dicatat hari ini?'),
+          content: const Text(
+              'Apakah Anda yakin ingin menghapus semua data makanan yang sudah dicatat hari ini?'),
           actions: [
             TextButton(
               onPressed: () => Get.back(result: false),
@@ -377,17 +409,17 @@ class DailyNutritionController extends GetxController {
           ],
         ),
       );
-      
+
       if (result == true) {
         consumedCalories.value = 0;
         consumedProtein.value = 0;
         consumedCarbs.value = 0;
         consumedFat.value = 0;
         consumedFoods.clear();
-        
+
         // Simpan data yang sudah direset
         saveData();
-        
+
         Get.snackbar(
           'Berhasil',
           'Data harian berhasil direset',
@@ -410,7 +442,7 @@ class DailyNutritionController extends GetxController {
     if (targetCalories.value == 0) return; // Skip if requirements not set
 
     List<String> lowNutrients = [];
-    
+
     if ((consumedCalories.value / targetCalories.value) < 0.7) {
       lowNutrients.add('Kalori');
     }
@@ -423,7 +455,7 @@ class DailyNutritionController extends GetxController {
     if ((consumedFat.value / targetFat.value) < 0.7) {
       lowNutrients.add('Lemak');
     }
-    
+
     if (lowNutrients.isNotEmpty) {
       Get.snackbar(
         'Peringatan Nutrisi',
@@ -438,11 +470,11 @@ class DailyNutritionController extends GetxController {
   // Validate input
   bool _validateInput(String age, String weight) {
     bool isValid = true;
-    
+
     // Clear previous errors
     ageError.value = '';
     weightError.value = '';
-    
+
     // Validate age
     try {
       final ageNum = int.parse(age);
@@ -454,7 +486,7 @@ class DailyNutritionController extends GetxController {
       ageError.value = 'Usia tidak valid';
       isValid = false;
     }
-    
+
     // Validate weight
     try {
       final weightNum = double.parse(weight);
@@ -466,18 +498,19 @@ class DailyNutritionController extends GetxController {
       weightError.value = 'Berat badan tidak valid';
       isValid = false;
     }
-    
+
     return isValid;
   }
 
   // Get nutrition percentages for progress bars
   Map<String, double> getNutritionPercentages() {
-    if (targetCalories.value == 0) return {
-      'calories': 0,
-      'protein': 0,
-      'carbs': 0,
-      'fat': 0,
-    };
+    if (targetCalories.value == 0)
+      return {
+        'calories': 0,
+        'protein': 0,
+        'carbs': 0,
+        'fat': 0,
+      };
 
     return {
       'calories': (consumedCalories.value / targetCalories.value) * 100,
