@@ -12,6 +12,16 @@ class DailyNutritionController extends GetxController {
   final targetCarbs = 0.0.obs;
   final targetFat = 0.0.obs;
 
+  final consumedIron = 0.0.obs;
+  final consumedCalcium = 0.0.obs;
+  final consumedVitaminD = 0.0.obs;
+  final consumedZinc = 0.0.obs;
+
+  final targetIron = 0.0.obs;
+  final targetCalcium = 0.0.obs;
+  final targetVitaminD = 0.0.obs;
+  final targetZinc = 0.0.obs;
+
   // Nutrisi yang sudah dikonsumsi
   final consumedCalories = 0.0.obs;
   final consumedProtein = 0.0.obs;
@@ -34,9 +44,9 @@ class DailyNutritionController extends GetxController {
   final consumedFoods = <FoodNutrition>[].obs;
 
   // Status berat badan
-  final weightStatus = RxString('');
   final idealWeightLow = 0.0.obs;
   final idealWeightHigh = 0.0.obs;
+  final weightStatus = RxString('');
 
   // Tanggal hari ini
   final currentDate = DateTime.now().obs;
@@ -175,7 +185,7 @@ class DailyNutritionController extends GetxController {
       isLoading.value = true;
 
       // Validate input
-      if (!_validateInput(age, weight)) return;
+      if (!validateInput(age, weight)) return;
 
       final ageInMonths = int.parse(age);
       final weightInKg = double.parse(weight);
@@ -213,6 +223,7 @@ class DailyNutritionController extends GetxController {
       isLoading.value = false;
     }
   }
+
 
   // Hitung status berat badan berdasarkan usia
   void calculateWeightStatus(int ageInMonths, double weightInKg) {
@@ -296,68 +307,42 @@ class DailyNutritionController extends GetxController {
     }
   }
 
-  // Tambah makanan yang dikonsumsi
-  void addFood(FoodNutrition food, double consumedPortion) {
-    try {
-      final adjustedFood = food.adjustPortion(consumedPortion);
-      consumedFoods.add(adjustedFood);
+  void addFood(FoodNutrition food, double portion) {
+  try {
+    final adjustedFood = food.adjustPortion(portion);
+    consumedFoods.add(adjustedFood);
 
-      // Update total nutrisi
-      consumedCalories.value += adjustedFood.calories;
-      consumedProtein.value += adjustedFood.protein;
-      consumedCarbs.value += adjustedFood.carbs;
-      consumedFat.value += adjustedFood.fat;
+    // Update total nutrients
+    consumedCalories.value += adjustedFood.calories;
+    consumedProtein.value += adjustedFood.protein;
+    consumedCarbs.value += adjustedFood.carbs;
+    consumedFat.value += adjustedFood.fat;
+    
+    // Add micronutrients
+    if (adjustedFood.iron != null) consumedIron.value += adjustedFood.iron!;
+    if (adjustedFood.calcium != null) consumedCalcium.value += adjustedFood.calcium!;
+    if (adjustedFood.vitaminD != null) consumedVitaminD.value += adjustedFood.vitaminD!;
+    if (adjustedFood.zinc != null) consumedZinc.value += adjustedFood.zinc!;
 
-      // Simpan data
-      saveData();
-
-      // Delay snackbar untuk menghindari konflik dengan dialog
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (Get.isSnackbarOpen) {
-          Get.closeCurrentSnackbar();
-        }
-        Get.showSnackbar(
-          GetSnackBar(
-            message: 'Makanan berhasil ditambahkan',
-            duration: const Duration(seconds: 2),
-            backgroundColor: Colors.green.shade100,
-            messageText: Text(
-              'Makanan berhasil ditambahkan',
-              style: TextStyle(
-                color: Colors.green.shade900,
-                fontFamily: 'Signika',
-              ),
-            ),
-          ),
-        );
-      });
-
-      // Check nutrisi setelah delay
-      Future.delayed(const Duration(seconds: 1), () {
-        checkNutritionStatus();
-      });
-    } catch (e) {
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (Get.isSnackbarOpen) {
-          Get.closeCurrentSnackbar();
-        }
-        Get.showSnackbar(
-          GetSnackBar(
-            message: 'Gagal menambahkan makanan: ${e.toString()}',
-            duration: const Duration(seconds: 2),
-            backgroundColor: Colors.red.shade100,
-            messageText: Text(
-              'Gagal menambahkan makanan: ${e.toString()}',
-              style: TextStyle(
-                color: Colors.red.shade900,
-                fontFamily: 'Signika',
-              ),
-            ),
-          ),
-        );
-      });
-    }
+    // Save data
+    saveData();
+    
+    // Show success message
+    Get.snackbar(
+      'Berhasil',
+      'Makanan berhasil ditambahkan',
+      backgroundColor: Colors.green[100],
+      colorText: Colors.green[900],
+    );
+  } catch (e) {
+    Get.snackbar(
+      'Error',
+      'Gagal menambahkan makanan: ${e.toString()}',
+      backgroundColor: Colors.red[100],
+      colorText: Colors.red[900],
+    );
   }
+}
 
   // Hapus makanan dari daftar
   void removeFood(int index) {
@@ -467,40 +452,39 @@ class DailyNutritionController extends GetxController {
     }
   }
 
-  // Validate input
-  bool _validateInput(String age, String weight) {
-    bool isValid = true;
+  bool validateInput(String age, String weight) {
+  bool isValid = true;
 
-    // Clear previous errors
-    ageError.value = '';
-    weightError.value = '';
+  // Clear previous errors
+  ageError.value = '';
+  weightError.value = '';
 
-    // Validate age
-    try {
-      final ageNum = int.parse(age);
-      if (ageNum <= 0 || ageNum > 24) {
-        ageError.value = 'Usia harus antara 1-24 bulan';
-        isValid = false;
-      }
-    } catch (e) {
-      ageError.value = 'Usia tidak valid';
+  // Validate age
+  try {
+    final ageNum = int.parse(age);
+    if (ageNum <= 0 || ageNum > 24) {
+      ageError.value = 'Usia harus antara 1-24 bulan';
       isValid = false;
     }
+  } catch (e) {
+    ageError.value = 'Usia tidak valid';
+    isValid = false;
+  }
 
-    // Validate weight
-    try {
-      final weightNum = double.parse(weight);
-      if (weightNum <= 0 || weightNum > 30) {
-        weightError.value = 'Berat badan tidak valid';
-        isValid = false;
-      }
-    } catch (e) {
+  // Validate weight
+  try {
+    final weightNum = double.parse(weight);
+    if (weightNum <= 0 || weightNum > 30) {
       weightError.value = 'Berat badan tidak valid';
       isValid = false;
     }
-
-    return isValid;
+  } catch (e) {
+    weightError.value = 'Berat badan tidak valid';
+    isValid = false;
   }
+
+  return isValid;
+}
 
   // Get nutrition percentages for progress bars
   Map<String, double> getNutritionPercentages() {

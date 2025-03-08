@@ -1,0 +1,2 @@
+D:/Mapel/Android Dev/growell_app/android/app/.cxx/RelWithDebInfo/5e1w1m3r/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/Mapel/Android Dev/growell_app/android/app/.cxx/RelWithDebInfo/5e1w1m3r/armeabi-v7a/CMakeFiles/rebuild_cache.dir
