@@ -1214,92 +1214,99 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
     }
   }
 
-  Widget _buildNutritionRecommendations() {
-    final percentages = controller.getNutritionPercentages();
+Widget _buildNutritionRecommendations() {
 
-    // Find the nutrient with the lowest percentage
-    String lowestNutrient = 'protein';
-    double lowestPercentage = percentages['protein']!;
-
-    if (percentages['carbs']! < lowestPercentage) {
-      lowestNutrient = 'carbs';
-      lowestPercentage = percentages['carbs']!;
+  int ageInMonths = 0;
+  try {
+    ageInMonths = int.parse(controller.ageController.text);
+  
+    if (ageInMonths < 6) {
+      return const SizedBox.shrink(); 
     }
+  } catch (e) {
 
-    if (percentages['fat']! < lowestPercentage) {
-      lowestNutrient = 'fat';
-      lowestPercentage = percentages['fat']!;
-    }
-
-    // Skip recommendations if we have > 70% of everything
-    if (lowestPercentage > 70) {
-      return const SizedBox.shrink();
-    }
-
-    // Get food recommendations based on the nutrient that's lacking
-    List<FoodNutrition> recommendedFoods = [];
-    String nutrientName = '';
-
-    switch (lowestNutrient) {
-      case 'protein':
-        recommendedFoods =
-            CommonBabyFood.getFoodsHighIn('protein').take(3).toList();
-        nutrientName = 'Protein';
-        break;
-      case 'carbs':
-        recommendedFoods =
-            CommonBabyFood.getFoodsByGroup('Grain').take(3).toList();
-        nutrientName = 'Karbohidrat';
-        break;
-      case 'fat':
-        // Foods high in healthy fats
-        recommendedFoods = CommonBabyFood.basicFoods
-            .where((food) => food.fat > 3.0)
-            .take(3)
-            .toList();
-        nutrientName = 'Lemak';
-        break;
-    }
-
-    if (recommendedFoods.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: AppStyles.cardDecoration,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.lightbulb_outline,
-                color: Colors.orange,
-                size: 22,
-              ),
-              const SizedBox(width: 8),
-              const Text(
-                'Rekomendasi Makanan',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontFamily: 'Signika',
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _buildRecommendationAlert(nutrientName),
-          const SizedBox(height: 16),
-          ...recommendedFoods
-              .map((food) => _buildRecommendedFoodItem(food, lowestNutrient)),
-        ],
-      ),
-    );
   }
+
+  final percentages = controller.getNutritionPercentages();
+
+  String lowestNutrient = 'protein';
+  double lowestPercentage = percentages['protein']!;
+
+  if (percentages['carbs']! < lowestPercentage) {
+    lowestNutrient = 'carbs';
+    lowestPercentage = percentages['carbs']!;
+  }
+
+  if (percentages['fat']! < lowestPercentage) {
+    lowestNutrient = 'fat';
+    lowestPercentage = percentages['fat']!;
+  }
+
+  if (lowestPercentage > 70) {
+    return const SizedBox.shrink();
+  }
+  List<FoodNutrition> recommendedFoods = [];
+  String nutrientName = '';
+
+  switch (lowestNutrient) {
+    case 'protein':
+      recommendedFoods =
+          CommonBabyFood.getFoodsHighIn('protein').take(3).toList();
+      nutrientName = 'Protein';
+      break;
+    case 'carbs':
+      recommendedFoods =
+          CommonBabyFood.getFoodsByGroup('Grain').take(3).toList();
+      nutrientName = 'Karbohidrat';
+      break;
+    case 'fat':
+      recommendedFoods = CommonBabyFood.basicFoods
+          .where((food) => food.fat > 3.0)
+          .take(3)
+          .toList();
+      nutrientName = 'Lemak';
+      break;
+  }
+
+  if (recommendedFoods.isEmpty) {
+    return const SizedBox.shrink();
+  }
+
+  return Container(
+    width: double.infinity,
+    padding: const EdgeInsets.all(20),
+    decoration: AppStyles.cardDecoration,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Icon(
+              Icons.lightbulb_outline,
+              color: Colors.orange,
+              size: 22,
+            ),
+            const SizedBox(width: 8),
+            const Text(
+              'Rekomendasi Makanan',
+              style: TextStyle(
+                fontSize: 16,
+                fontFamily: 'Signika',
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _buildRecommendationAlert(nutrientName),
+        const SizedBox(height: 16),
+        ...recommendedFoods
+            .map((food) => _buildRecommendedFoodItem(food, lowestNutrient)),
+      ],
+    ),
+  );
+}
 
   Widget _buildRecommendationAlert(String nutrientName) {
     return Container(
@@ -1995,8 +2002,6 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                     ),
                   ),
                   const SizedBox(width: 12),
-
-                  // Tombol lanjutkan
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
@@ -2013,8 +2018,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                       child: const Text(
                         'Lanjutkan',
                         style: TextStyle(
-                          fontFamily: 'Signika',
-                        ),
+                            fontFamily: 'Signika', color: Colors.white),
                       ),
                     ),
                   ),
@@ -2297,7 +2301,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                     child: OutlinedButton(
                       onPressed: () => Get.back(),
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Colors.grey),
+                        side: const BorderSide(color: AppStyles.primaryColor),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -2306,7 +2310,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                       child: const Text(
                         'Kembali',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Colors.black,
                           fontFamily: 'Signika',
                         ),
                       ),
@@ -2321,7 +2325,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                         _showPortionDialog(food);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppStyles.primaryColor,
+                        backgroundColor: AppStyles.errorColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -2330,6 +2334,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                       child: const Text(
                         'Tambahkan',
                         style: TextStyle(
+                          color: Colors.white,
                           fontFamily: 'Signika',
                         ),
                       ),
@@ -2973,6 +2978,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                         'Tambah',
                         style: TextStyle(
                           fontSize: 16,
+                          color: Colors.white,
                           fontFamily: 'Signika',
                           fontWeight: FontWeight.w600,
                         ),
