@@ -4,13 +4,16 @@ import 'package:growell_app/bindings/bottom_navigation_binding.dart';
 import 'package:growell_app/bindings/daily_nutrition_binding.dart';
 import 'package:growell_app/bindings/edit_profile_binding.dart';
 import 'package:growell_app/bindings/onBoarding_binding.dart';
+import 'package:growell_app/bindings/splash_binding.dart';
 import 'package:growell_app/pages/bottom_navigation.dart';
 import 'package:growell_app/pages/daily_nutrition_page.dart';
 import 'package:growell_app/pages/edit_profile_page.dart';
 import 'package:growell_app/pages/login_page.dart';
 import 'package:growell_app/pages/onBoarding_page.dart';
+import 'package:growell_app/pages/splash_screen.dart';
 
 abstract class Routes {
+  static const SPLASH = '/splash';
   static const INITIAL = AUTH;
   static const AUTH = '/auth';
   static const ONBOARDING = '/onboarding';
@@ -24,6 +27,12 @@ class AppPages {
   AppPages._();
 
   static final routes = [
+    GetPage(
+      name: Routes.SPLASH,
+      page: () => const SplashScreen(),
+      binding: SplashBinding(),
+      transition: Transition.fadeIn,
+    ),
     GetPage(
       name: Routes.AUTH,
       page: () => LoginPage(),

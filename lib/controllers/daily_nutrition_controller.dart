@@ -6,7 +6,9 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 
 class DailyNutritionController extends GetxController {
-  // Target nutrisi harian
+  late TextEditingController ageController;
+  late TextEditingController weightController;
+  
   final targetCalories = 0.0.obs;
   final targetProtein = 0.0.obs;
   final targetCarbs = 0.0.obs;
@@ -22,43 +24,32 @@ class DailyNutritionController extends GetxController {
   final targetVitaminD = 0.0.obs;
   final targetZinc = 0.0.obs;
 
-  // Nutrisi yang sudah dikonsumsi
   final consumedCalories = 0.0.obs;
   final consumedProtein = 0.0.obs;
   final consumedCarbs = 0.0.obs;
   final consumedFat = 0.0.obs;
 
-  // Loading state
   final isLoading = false.obs;
   final isSaving = false.obs;
 
-  // Error messages
   final ageError = RxString('');
   final weightError = RxString('');
 
-  // Input controllers
-  final ageController = TextEditingController();
-  final weightController = TextEditingController();
-
-  // Daftar makanan yang dikonsumsi hari ini
   final consumedFoods = <FoodNutrition>[].obs;
 
-  // Status berat badan
   final idealWeightLow = 0.0.obs;
   final idealWeightHigh = 0.0.obs;
   final weightStatus = RxString('');
 
-  // Tanggal hari ini
   final currentDate = DateTime.now().obs;
   final dateFormatted = RxString('');
 
   @override
   void onInit() {
     super.onInit();
-    // Format tanggal
+    ageController = TextEditingController();
+    weightController = TextEditingController();
     dateFormatted.value = DateFormat('dd MMMM yyyy').format(currentDate.value);
-
-    // Load data dari shared preferences
     loadSavedData();
   }
 

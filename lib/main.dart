@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Growell App',
       initialBinding: InitialBinding(),
-      initialRoute: Routes.INITIAL,
+      initialRoute: Routes.SPLASH,
       getPages: AppPages.routes,
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
