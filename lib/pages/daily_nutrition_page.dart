@@ -822,21 +822,15 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                   return;
                 }
 
-                // Tampilkan loading dialog
                 _showLoadingDialog();
 
-                // Tunggu 1 detik, lalu hitung kebutuhan nutrisi
                 Future.delayed(const Duration(seconds: 1), () {
-                  // Tutup dialog loading
                   Get.back();
-
-                  // Hitung kebutuhan nutrisi
                   controller.calculateRequirements(
                     controller.ageController.text,
                     controller.weightController.text,
                   );
 
-                  // Tampilkan dialog sukses
                   _showSuccessDialog();
                 });
               },
@@ -937,8 +931,6 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ),
       barrierDismissible: true,
     );
-
-    // Tutup dialog setelah 2 detik
     Future.delayed(const Duration(seconds: 2), () {
       Get.back();
     });
@@ -1214,99 +1206,96 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
     }
   }
 
-Widget _buildNutritionRecommendations() {
+  Widget _buildNutritionRecommendations() {
+    int ageInMonths = 0;
+    try {
+      ageInMonths = int.parse(controller.ageController.text);
 
-  int ageInMonths = 0;
-  try {
-    ageInMonths = int.parse(controller.ageController.text);
-  
-    if (ageInMonths < 6) {
-      return const SizedBox.shrink(); 
+      if (ageInMonths < 6) {
+        return const SizedBox.shrink();
+      }
+    } catch (e) {}
+
+    final percentages = controller.getNutritionPercentages();
+
+    String lowestNutrient = 'protein';
+    double lowestPercentage = percentages['protein']!;
+
+    if (percentages['carbs']! < lowestPercentage) {
+      lowestNutrient = 'carbs';
+      lowestPercentage = percentages['carbs']!;
     }
-  } catch (e) {
 
-  }
+    if (percentages['fat']! < lowestPercentage) {
+      lowestNutrient = 'fat';
+      lowestPercentage = percentages['fat']!;
+    }
 
-  final percentages = controller.getNutritionPercentages();
+    if (lowestPercentage > 70) {
+      return const SizedBox.shrink();
+    }
+    List<FoodNutrition> recommendedFoods = [];
+    String nutrientName = '';
 
-  String lowestNutrient = 'protein';
-  double lowestPercentage = percentages['protein']!;
+    switch (lowestNutrient) {
+      case 'protein':
+        recommendedFoods =
+            CommonBabyFood.getFoodsHighIn('protein').take(3).toList();
+        nutrientName = 'Protein';
+        break;
+      case 'carbs':
+        recommendedFoods =
+            CommonBabyFood.getFoodsByGroup('Grain').take(3).toList();
+        nutrientName = 'Karbohidrat';
+        break;
+      case 'fat':
+        recommendedFoods = CommonBabyFood.basicFoods
+            .where((food) => food.fat > 3.0)
+            .take(3)
+            .toList();
+        nutrientName = 'Lemak';
+        break;
+    }
 
-  if (percentages['carbs']! < lowestPercentage) {
-    lowestNutrient = 'carbs';
-    lowestPercentage = percentages['carbs']!;
-  }
+    if (recommendedFoods.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
-  if (percentages['fat']! < lowestPercentage) {
-    lowestNutrient = 'fat';
-    lowestPercentage = percentages['fat']!;
-  }
-
-  if (lowestPercentage > 70) {
-    return const SizedBox.shrink();
-  }
-  List<FoodNutrition> recommendedFoods = [];
-  String nutrientName = '';
-
-  switch (lowestNutrient) {
-    case 'protein':
-      recommendedFoods =
-          CommonBabyFood.getFoodsHighIn('protein').take(3).toList();
-      nutrientName = 'Protein';
-      break;
-    case 'carbs':
-      recommendedFoods =
-          CommonBabyFood.getFoodsByGroup('Grain').take(3).toList();
-      nutrientName = 'Karbohidrat';
-      break;
-    case 'fat':
-      recommendedFoods = CommonBabyFood.basicFoods
-          .where((food) => food.fat > 3.0)
-          .take(3)
-          .toList();
-      nutrientName = 'Lemak';
-      break;
-  }
-
-  if (recommendedFoods.isEmpty) {
-    return const SizedBox.shrink();
-  }
-
-  return Container(
-    width: double.infinity,
-    padding: const EdgeInsets.all(20),
-    decoration: AppStyles.cardDecoration,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            const Icon(
-              Icons.lightbulb_outline,
-              color: Colors.orange,
-              size: 22,
-            ),
-            const SizedBox(width: 8),
-            const Text(
-              'Rekomendasi Makanan',
-              style: TextStyle(
-                fontSize: 16,
-                fontFamily: 'Signika',
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: AppStyles.cardDecoration,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.lightbulb_outline,
+                color: Colors.orange,
+                size: 22,
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        _buildRecommendationAlert(nutrientName),
-        const SizedBox(height: 16),
-        ...recommendedFoods
-            .map((food) => _buildRecommendedFoodItem(food, lowestNutrient)),
-      ],
-    ),
-  );
-}
+              const SizedBox(width: 8),
+              const Text(
+                'Rekomendasi Makanan',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'Signika',
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _buildRecommendationAlert(nutrientName),
+          const SizedBox(height: 16),
+          ...recommendedFoods
+              .map((food) => _buildRecommendedFoodItem(food, lowestNutrient)),
+        ],
+      ),
+    );
+  }
 
   Widget _buildRecommendationAlert(String nutrientName) {
     return Container(
@@ -1516,7 +1505,8 @@ Widget _buildNutritionRecommendations() {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text('Tutup'),
+                    child: const Text('Tutup',
+                        style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),
@@ -1733,7 +1723,6 @@ Widget _buildNutritionRecommendations() {
                 ),
               ),
 
-              // Tombol untuk menambahkan makanan kustom
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -1741,10 +1730,9 @@ Widget _buildNutritionRecommendations() {
                   width: double.infinity,
                   child: OutlinedButton.icon(
                     onPressed: () {
-                      Get.back(); // Tutup dialog pencarian
+                      Get.back();
                       _showCustomFoodInputDialog(
-                          isUnder6Months:
-                              isUnder6Months); // Tampilkan dialog input makanan
+                          isUnder6Months: isUnder6Months);
                     },
                     icon: const Icon(
                       Icons.add_circle_outline,
@@ -2203,7 +2191,6 @@ Widget _buildNutritionRecommendations() {
                   ),
                   const SizedBox(height: 24),
 
-                  // Tombol Tutup
                   SizedBox(
                     width: double.infinity,
                     height: 48,
@@ -3071,7 +3058,7 @@ Widget _buildNutritionRecommendations() {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text('Tutup'),
+                  child: Text('Tutup', style: TextStyle(color: Colors.white)),
                 ),
               ),
             ],
@@ -3297,7 +3284,10 @@ Widget _buildNutritionRecommendations() {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text('Tutup'),
+                    child: Text(
+                      'Tutup',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ],
               ),
