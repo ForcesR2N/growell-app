@@ -4,6 +4,6 @@ import 'package:growell_app/controllers/nutrition_requirement_service.dart';
 class BottomNavigationBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<DailyNutritionController>(() => DailyNutritionController());
+    Get.put<DailyNutritionController>(DailyNutritionController(), permanent: true);
   }
 }

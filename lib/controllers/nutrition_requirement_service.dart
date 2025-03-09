@@ -106,11 +106,11 @@ class NutritionRequirementService {
 }
 
 class DailyNutritionController extends GetxController {
-  // Controllers for text input
-  late TextEditingController ageController;
-  late TextEditingController weightController;
-  
-  // Target nutrition values
+TextEditingController? ageController;
+TextEditingController? weightController;
+
+  final isDisposed = false.obs;
+
   final targetCalories = 0.0.obs;
   final targetProtein = 0.0.obs;
   final targetCarbs = 0.0.obs;
@@ -120,7 +120,6 @@ class DailyNutritionController extends GetxController {
   final targetVitaminD = 0.0.obs;
   final targetZinc = 0.0.obs;
 
-  // Consumed nutrition values
   final consumedCalories = 0.0.obs;
   final consumedProtein = 0.0.obs;
   final consumedCarbs = 0.0.obs;
@@ -130,25 +129,20 @@ class DailyNutritionController extends GetxController {
   final consumedVitaminD = 0.0.obs;
   final consumedZinc = 0.0.obs;
 
-  // UI state
   final isLoading = false.obs;
   final isSaving = false.obs;
   final ageError = RxString('');
   final weightError = RxString('');
 
-  // Food data
   final consumedFoods = <FoodNutrition>[].obs;
-  
-  // Weight status data
+
   final idealWeightLow = 0.0.obs;
   final idealWeightHigh = 0.0.obs;
   final weightStatus = RxString('');
 
-  // Date handling
   final currentDate = DateTime.now().obs;
   final dateFormatted = RxString('');
 
-  // Activity level
   final activityLevel = 5.0.obs;
 
   @override
@@ -163,15 +157,21 @@ class DailyNutritionController extends GetxController {
 
   @override
   void onClose() {
-    // Only dispose if controllers are initialized
-    try {
-      ageController.dispose();
-      weightController.dispose();
-    } catch (e) {
-      print('Error disposing controllers: $e');
-    }
-    super.onClose();
+    isDisposed.value = true;
+ try {
+
+    ageController?.dispose();
+    weightController?.dispose();
+    
+    ageController = null;
+    weightController = null;
+  } catch (e) {
+    print('Error disposing controllers: $e');
   }
+  super.onClose();
+}
+
+  bool get isActive => !isDisposed.value;
 
   Future<void> loadActivityLevel() async {
     try {
@@ -246,7 +246,9 @@ class DailyNutritionController extends GetxController {
     } finally {
       isLoading.value = false;
     }
-  }Future<void> saveData() async {
+  }
+
+  Future<void> saveData() async {
     try {
       isSaving.value = true;
 
@@ -431,7 +433,9 @@ class DailyNutritionController extends GetxController {
     } else {
       weightStatus.value = 'normal';
     }
-  }String getWeightStatusAdvice() {
+  }
+
+  String getWeightStatusAdvice() {
     if (weightStatus.value == 'underweight') {
       return 'Berat badan si kecil kurang dari ideal. Tambahkan makanan padat gizi dan tinggi kalori seperti alpukat, ikan, dan makanan dengan lemak sehat. Tingkatkan frekuensi makan.';
     } else if (weightStatus.value == 'overweight') {
@@ -450,14 +454,16 @@ class DailyNutritionController extends GetxController {
       consumedProtein.value += adjustedFood.protein;
       consumedCarbs.value += adjustedFood.carbs;
       consumedFat.value += adjustedFood.fat;
-      
+
       if (adjustedFood.iron != null) consumedIron.value += adjustedFood.iron!;
-      if (adjustedFood.calcium != null) consumedCalcium.value += adjustedFood.calcium!;
-      if (adjustedFood.vitaminD != null) consumedVitaminD.value += adjustedFood.vitaminD!;
+      if (adjustedFood.calcium != null)
+        consumedCalcium.value += adjustedFood.calcium!;
+      if (adjustedFood.vitaminD != null)
+        consumedVitaminD.value += adjustedFood.vitaminD!;
       if (adjustedFood.zinc != null) consumedZinc.value += adjustedFood.zinc!;
 
       saveData();
-      
+
       Get.snackbar(
         'Berhasil',
         'Makanan berhasil ditambahkan',
@@ -529,12 +535,12 @@ class DailyNutritionController extends GetxController {
         consumedProtein.value = 0;
         consumedCarbs.value = 0;
         consumedFat.value = 0;
-        
+
         consumedIron.value = 0;
         consumedCalcium.value = 0;
         consumedVitaminD.value = 0;
         consumedZinc.value = 0;
-        
+
         consumedFoods.clear();
 
         saveData();
@@ -573,11 +579,12 @@ class DailyNutritionController extends GetxController {
     if ((consumedFat.value / targetFat.value) < 0.7) {
       lowNutrients.add('Lemak');
     }
-    
+
     if (targetIron.value > 0 && (consumedIron.value / targetIron.value) < 0.7) {
       lowNutrients.add('Zat Besi');
     }
-    if (targetCalcium.value > 0 && (consumedCalcium.value / targetCalcium.value) < 0.7) {
+    if (targetCalcium.value > 0 &&
+        (consumedCalcium.value / targetCalcium.value) < 0.7) {
       lowNutrients.add('Kalsium');
     }
 
@@ -591,6 +598,7 @@ class DailyNutritionController extends GetxController {
       );
     }
   }
+
   Map<String, double> getNutritionPercentages() {
     if (targetCalories.value == 0) {
       return {

@@ -4,6 +4,8 @@ import 'package:growell_app/controllers/nutrition_requirement_service.dart';
 class DailyNutritionBinding extends Bindings {
   @override
   void dependencies() {
-    Get.put<DailyNutritionController>(DailyNutritionController());
+   if (!Get.isRegistered<DailyNutritionController>()) {
+      Get.put<DailyNutritionController>(DailyNutritionController(), permanent: true);
+    }
   }
 }
