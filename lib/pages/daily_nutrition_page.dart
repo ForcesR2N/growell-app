@@ -3,35 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:growell_app/models/food_nutrition_model.dart';
+import 'package:growell_app/widget%20daily/app_styles.dart';
 import '../controllers/daily_nutrition_controller.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 
-// Simple styles class that would normally be in a separate file
-class AppStyles {
-  static const Color primaryColor = Color(0xFF91C788);
-  static const Color secondaryColor = Color(0xFFEEF6ED);
-  static const Color errorColor = Color(0xFFF44336);
-  static const Color warningColor = Color(0xFFFF9800);
-  static const Color successColor = Color(0xFF4CAF50);
-  static const Color infoColor = Color(0xFF2196F3);
-
-  static BoxDecoration cardDecoration = BoxDecoration(
-    color: Colors.white,
-    borderRadius: BorderRadius.circular(20),
-    boxShadow: [
-      BoxShadow(
-        color: Colors.black.withOpacity(0.08),
-        blurRadius: 10,
-        offset: const Offset(0, 4),
-      ),
-    ],
-  );
-
-  static BorderRadius defaultRadius = BorderRadius.circular(12);
-}
-
 class DailyNutritionPage extends GetView<DailyNutritionController> {
+  
   const DailyNutritionPage({Key? key}) : super(key: key);
 
   @override
