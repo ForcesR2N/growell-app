@@ -698,21 +698,115 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                 ),
               ),
               onPressed: () {
-                controller.calculateRequirements(
-                  controller.ageController.text,
-                  controller.weightController.text,
-                );
-                if (controller.ageError.value.isEmpty &&
-                    controller.weightError.value.isEmpty) {
-                  _showSuccessDialog();
-                }
-              },
-            ),
-          ),
+      // Validasi input terlebih dahulu
+      bool isValid = true;
+      
+      // Validate age
+      try {
+        final ageNum = int.parse(controller.ageController.text);
+        if (ageNum <= 0 || ageNum > 24) {
+          controller.ageError.value = 'Usia harus antara 1-24 bulan';
+          isValid = false;
+        } else {
+          controller.ageError.value = '';
+        }
+      } catch (e) {
+        controller.ageError.value = 'Usia tidak valid';
+        isValid = false;
+      }
+
+      // Validate weight
+      try {
+        final weightNum = double.parse(controller.weightController.text);
+        if (weightNum <= 0 || weightNum > 30) {
+          controller.weightError.value = 'Berat badan tidak valid';
+          isValid = false;
+        } else {
+          controller.weightError.value = '';
+        }
+      } catch (e) {
+        controller.weightError.value = 'Berat badan tidak valid';
+        isValid = false;
+      }
+      
+      if (!isValid) {
+        // Jika validasi gagal, tampilkan snackbar
+        Get.snackbar(
+          'Validasi',
+          'Mohon lengkapi data dengan benar',
+          backgroundColor: Colors.red[100],
+          colorText: Colors.red[900],
+        );
+        return;
+      }
+      
+      // Tampilkan loading dialog
+      _showLoadingDialog();
+      
+      // Tunggu 1 detik, lalu hitung kebutuhan nutrisi
+      Future.delayed(const Duration(seconds: 1), () {
+        // Tutup dialog loading
+        Get.back();
+        
+        // Hitung kebutuhan nutrisi
+        controller.calculateRequirements(
+          controller.ageController.text,
+          controller.weightController.text,
+        );
+        
+        // Tampilkan dialog sukses
+        _showSuccessDialog();
+      });
+    },
+  ),
+),
         ],
       ),
     );
   }
+
+  void _showLoadingDialog() {
+  Get.dialog(
+    Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      child: Container(
+        width: 100,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF91C788)),
+              strokeWidth: 3,
+            ),
+            const SizedBox(height: 15),
+            const Text(
+              'Menghitung...',
+              style: TextStyle(
+                fontSize: 16,
+                fontFamily: 'Signika',
+                color: Colors.black87,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+    barrierDismissible: false, // Tidak bisa ditutup selama proses loading
+  );
+}
 
   void _showSuccessDialog() {
     Get.dialog(
