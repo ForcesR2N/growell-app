@@ -9,7 +9,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 
 class DailyNutritionPage extends GetView<DailyNutritionController> {
-  
   const DailyNutritionPage({Key? key}) : super(key: key);
 
   @override
