@@ -2,13 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:growell_app/controllers/nutrition_requirement_service.dart';
 import 'package:growell_app/models/food_nutrition_model.dart';
 import 'package:growell_app/widget%20daily/app_styles.dart';
-import '../controllers/daily_nutrition_controller.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 
-class DailyNutritionPage extends GetView<DailyNutritionController> {
+class DailyNutritionPage extends GetView<NutritionRequirementService> {
   const DailyNutritionPage({Key? key}) : super(key: key);
 
   @override
