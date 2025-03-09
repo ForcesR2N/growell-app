@@ -682,10 +682,14 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
             width: double.infinity,
             height: 48,
             child: ElevatedButton.icon(
-              icon: const Icon(Icons.calculate),
+              icon: const Icon(
+                Icons.calculate,
+                color: Colors.yellow,
+              ),
               label: const Text(
                 'Hitung Kebutuhan Nutrisi',
                 style: TextStyle(
+                  color: Colors.white,
                   fontSize: 16,
                   fontFamily: 'Signika',
                   fontWeight: FontWeight.w600,
@@ -698,115 +702,116 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                 ),
               ),
               onPressed: () {
-      // Validasi input terlebih dahulu
-      bool isValid = true;
-      
-      // Validate age
-      try {
-        final ageNum = int.parse(controller.ageController.text);
-        if (ageNum <= 0 || ageNum > 24) {
-          controller.ageError.value = 'Usia harus antara 1-24 bulan';
-          isValid = false;
-        } else {
-          controller.ageError.value = '';
-        }
-      } catch (e) {
-        controller.ageError.value = 'Usia tidak valid';
-        isValid = false;
-      }
+                // Validasi input terlebih dahulu
+                bool isValid = true;
 
-      // Validate weight
-      try {
-        final weightNum = double.parse(controller.weightController.text);
-        if (weightNum <= 0 || weightNum > 30) {
-          controller.weightError.value = 'Berat badan tidak valid';
-          isValid = false;
-        } else {
-          controller.weightError.value = '';
-        }
-      } catch (e) {
-        controller.weightError.value = 'Berat badan tidak valid';
-        isValid = false;
-      }
-      
-      if (!isValid) {
-        // Jika validasi gagal, tampilkan snackbar
-        Get.snackbar(
-          'Validasi',
-          'Mohon lengkapi data dengan benar',
-          backgroundColor: Colors.red[100],
-          colorText: Colors.red[900],
-        );
-        return;
-      }
-      
-      // Tampilkan loading dialog
-      _showLoadingDialog();
-      
-      // Tunggu 1 detik, lalu hitung kebutuhan nutrisi
-      Future.delayed(const Duration(seconds: 1), () {
-        // Tutup dialog loading
-        Get.back();
-        
-        // Hitung kebutuhan nutrisi
-        controller.calculateRequirements(
-          controller.ageController.text,
-          controller.weightController.text,
-        );
-        
-        // Tampilkan dialog sukses
-        _showSuccessDialog();
-      });
-    },
-  ),
-),
+                // Validate age
+                try {
+                  final ageNum = int.parse(controller.ageController.text);
+                  if (ageNum <= 0 || ageNum > 24) {
+                    controller.ageError.value = 'Usia harus antara 1-24 bulan';
+                    isValid = false;
+                  } else {
+                    controller.ageError.value = '';
+                  }
+                } catch (e) {
+                  controller.ageError.value = 'Usia tidak valid';
+                  isValid = false;
+                }
+
+                // Validate weight
+                try {
+                  final weightNum =
+                      double.parse(controller.weightController.text);
+                  if (weightNum <= 0 || weightNum > 30) {
+                    controller.weightError.value = 'Berat badan tidak valid';
+                    isValid = false;
+                  } else {
+                    controller.weightError.value = '';
+                  }
+                } catch (e) {
+                  controller.weightError.value = 'Berat badan tidak valid';
+                  isValid = false;
+                }
+
+                if (!isValid) {
+                  // Jika validasi gagal, tampilkan snackbar
+                  Get.snackbar(
+                    'Validasi',
+                    'Mohon lengkapi data dengan benar',
+                    backgroundColor: Colors.red[100],
+                    colorText: Colors.red[900],
+                  );
+                  return;
+                }
+
+                // Tampilkan loading dialog
+                _showLoadingDialog();
+
+                // Tunggu 1 detik, lalu hitung kebutuhan nutrisi
+                Future.delayed(const Duration(seconds: 1), () {
+                  // Tutup dialog loading
+                  Get.back();
+
+                  // Hitung kebutuhan nutrisi
+                  controller.calculateRequirements(
+                    controller.ageController.text,
+                    controller.weightController.text,
+                  );
+
+                  // Tampilkan dialog sukses
+                  _showSuccessDialog();
+                });
+              },
+            ),
+          ),
         ],
       ),
     );
   }
 
   void _showLoadingDialog() {
-  Get.dialog(
-    Dialog(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      child: Container(
-        width: 100,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              spreadRadius: 1,
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF91C788)),
-              strokeWidth: 3,
-            ),
-            const SizedBox(height: 15),
-            const Text(
-              'Menghitung...',
-              style: TextStyle(
-                fontSize: 16,
-                fontFamily: 'Signika',
-                color: Colors.black87,
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: Container(
+          width: 100,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                spreadRadius: 1,
               ),
-            ),
-          ],
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF91C788)),
+                strokeWidth: 3,
+              ),
+              const SizedBox(height: 15),
+              const Text(
+                'Menghitung...',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'Signika',
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-    barrierDismissible: false, // Tidak bisa ditutup selama proses loading
-  );
-}
+      barrierDismissible: false, // Tidak bisa ditutup selama proses loading
+    );
+  }
 
   void _showSuccessDialog() {
     Get.dialog(
@@ -1505,149 +1510,506 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
     );
   }
 
-  void _showFoodSelectionDialog() {
-    Get.dialog(
-      Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Container(
-          width: Get.width * 0.9,
-          constraints: BoxConstraints(
-            maxHeight: Get.height * 0.8,
-            maxWidth: 400,
-          ),
+  // Modifikasi pada fungsi dialog pemilihan makanan di daily_nutrition_page.dart
+// Pada metode _showFoodSelectionDialog():
+
+void _showFoodSelectionDialog() {
+  final RxList<FoodNutrition> filteredFoods = RxList<FoodNutrition>.from(CommonBabyFood.basicFoods);
+  final TextEditingController searchController = TextEditingController();
+
+  Get.dialog(
+    Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        width: Get.width * 0.9,
+        constraints: BoxConstraints(
+          maxHeight: Get.height * 0.8,
+          maxWidth: 400,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: const BoxDecoration(
+                color: AppStyles.primaryColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.restaurant, color: Colors.white),
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text(
+                      'Pilih Makanan',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontFamily: 'Signika',
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white),
+                    onPressed: () => Get.back(),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  hintText: 'Cari makanan...',
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[100],
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                onChanged: (value) {
+                  if (value.isEmpty) {
+                    filteredFoods.value = CommonBabyFood.basicFoods;
+                  } else {
+                    filteredFoods.value = CommonBabyFood.basicFoods
+                        .where((food) => food.name.toLowerCase().contains(value.toLowerCase()))
+                        .toList();
+                  }
+                },
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    Get.back(); // Tutup dialog pencarian
+                    _showCustomFoodInputDialog(); // Tampilkan dialog input makanan
+                  },
+                  icon: const Icon(
+                    Icons.add_circle_outline,
+                    color: AppStyles.primaryColor,
+                  ),
+                  label: const Text(
+                    'Tambah Makanan Kustom',
+                    style: TextStyle(
+                      color: AppStyles.primaryColor,
+                      fontFamily: 'Signika',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppStyles.primaryColor),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                ),
+              ),
+            ),
+            Flexible(
+              child: Obx(() => ListView.builder(
+                shrinkWrap: true,
+                itemCount: filteredFoods.length,
+                itemBuilder: (context, index) {
+                  final food = filteredFoods[index];
+                  final foodGroup = food.foodGroup ?? 'Lainnya';
+                  final groupColor = _getFoodGroupColor(foodGroup);
+                  
+                  return Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: Colors.grey.withOpacity(0.2),
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      leading: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: groupColor.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(
+                          _getFoodGroupIcon(foodGroup),
+                          color: groupColor,
+                          size: 20,
+                        ),
+                      ),
+                      title: Text(
+                        food.name,
+                        style: const TextStyle(
+                          fontFamily: 'Signika',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Per ${food.portion}g: ${food.calories.toStringAsFixed(0)} kcal, P:${food.protein.toStringAsFixed(1)}g',
+                        style: TextStyle(
+                          fontFamily: 'Signika',
+                          fontSize: 13,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      trailing: Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: AppStyles.primaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(
+                          Icons.add,
+                          color: AppStyles.primaryColor,
+                          size: 20,
+                        ),
+                      ),
+                      onTap: () {
+                        Get.back();
+                        _showPortionDialog(food);
+                      },
+                    ),
+                  );
+                },
+              )),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+void _showCustomFoodInputDialog() {
+  // Controllers untuk input fields
+  final nameController = TextEditingController();
+  final portionController = TextEditingController(text: '100');
+  final caloriesController = TextEditingController();
+  final proteinController = TextEditingController();
+  final carbsController = TextEditingController();
+  final fatController = TextEditingController();
+  
+  // Untuk dropdown pilihan kelompok makanan
+  final foodGroups = ['Fruit', 'Vegetable', 'Grain', 'Protein', 'Dairy', 'Lainnya'];
+  final selectedFoodGroup = RxString(foodGroups.last);
+  
+  // Error messages
+  final nameError = RxString('');
+  final caloriesError = RxString('');
+  
+  Get.dialog(
+    Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Container(
+        width: Get.width * 0.9,
+        constraints: BoxConstraints(
+          maxHeight: Get.height * 0.9,
+          maxWidth: 500,
+        ),
+        padding: const EdgeInsets.all(24),
+        child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: const BoxDecoration(
-                  color: AppStyles.primaryColor,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
+              // Header
+              Row(
+                children: [
+                  const Icon(
+                    Icons.restaurant,
+                    color: AppStyles.primaryColor,
+                    size: 28,
                   ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Tambah Makanan Kustom',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: 'Signika',
+                        fontWeight: FontWeight.w600,
+                        color: AppStyles.primaryColor,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Get.back(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              
+              // Form
+              // 1. Nama makanan
+              Obx(() => _buildInputField(
+                label: 'Nama Makanan',
+                controller: nameController,
+                hintText: 'contoh: Bubur Ayam',
+                errorText: nameError.value,
+                isRequired: true,
+              )),
+              const SizedBox(height: 16),
+              
+              // 2. Kelompok makanan (dropdown)
+              const Text(
+                'Kelompok Makanan',
+                style: TextStyle(
+                  fontFamily: 'Signika',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
                 ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.restaurant, color: Colors.white),
-                    const SizedBox(width: 8),
-                    const Expanded(
+              ),
+              const SizedBox(height: 8),
+              Obx(() => Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: selectedFoodGroup.value,
+                    isExpanded: true,
+                    items: foodGroups.map((group) => DropdownMenuItem(
+                      value: group,
                       child: Text(
-                        'Pilih Makanan',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
+                        _getFoodGroupTitle(group),
+                        style: const TextStyle(
                           fontFamily: 'Signika',
-                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
                         ),
                       ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close, color: Colors.white),
-                      onPressed: () => Get.back(),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(16),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Cari makanan...',
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                    )).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        selectedFoodGroup.value = value;
+                      }
+                    },
                   ),
-                  onChanged: (value) {
-                    // Filter foods (in a real implementation)
-                  },
+                ),
+              )),
+              const SizedBox(height: 16),
+              
+              // 3. Ukuran Porsi (g)
+              _buildInputField(
+                label: 'Ukuran Porsi (gram)',
+                controller: portionController,
+                hintText: '100',
+                keyboardType: TextInputType.number,
+                errorText: '',
+                isRequired: true,
+              ),
+              const SizedBox(height: 16),
+              
+              // Nutrition Info
+              const Text(
+                'Informasi Nutrisi (per porsi)',
+                style: TextStyle(
+                  fontFamily: 'Signika',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
                 ),
               ),
-              Flexible(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: CommonBabyFood.basicFoods.length,
-                  itemBuilder: (context, index) {
-                    final food = CommonBabyFood.basicFoods[index];
-                    final foodGroup = food.foodGroup ?? 'Lainnya';
-                    final groupColor = _getFoodGroupColor(foodGroup);
-
-                    return Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: Colors.grey.withOpacity(0.2),
-                            width: 1,
-                          ),
-                        ),
-                      ),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
-                        leading: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: groupColor.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Icon(
-                            _getFoodGroupIcon(foodGroup),
-                            color: groupColor,
-                            size: 20,
-                          ),
-                        ),
-                        title: Text(
-                          food.name,
-                          style: const TextStyle(
-                            fontFamily: 'Signika',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        subtitle: Text(
-                          'Per ${food.portion}g: ${food.calories.toStringAsFixed(0)} kcal, P:${food.protein.toStringAsFixed(1)}g',
-                          style: TextStyle(
-                            fontFamily: 'Signika',
-                            fontSize: 13,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        trailing: Container(
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            color: AppStyles.primaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.add,
-                            color: AppStyles.primaryColor,
-                            size: 20,
-                          ),
-                        ),
-                        onTap: () {
-                          Get.back();
-                          _showPortionDialog(food);
-                        },
-                      ),
+              const SizedBox(height: 16),
+              
+              // 4. Kalori
+              Obx(() => _buildInputField(
+                label: 'Kalori (kcal)',
+                controller: caloriesController,
+                hintText: '0',
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                errorText: caloriesError.value,
+                isRequired: true,
+              )),
+              const SizedBox(height: 16),
+              
+              // 5. Protein
+              _buildInputField(
+                label: 'Protein (g)',
+                controller: proteinController,
+                hintText: '0',
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                errorText: '',
+                isRequired: false,
+              ),
+              const SizedBox(height: 16),
+              
+              // 6. Karbohidrat
+              _buildInputField(
+                label: 'Karbohidrat (g)',
+                controller: carbsController,
+                hintText: '0',
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                errorText: '',
+                isRequired: false,
+              ),
+              const SizedBox(height: 16),
+              
+              // 7. Lemak
+              _buildInputField(
+                label: 'Lemak (g)',
+                controller: fatController,
+                hintText: '0',
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                errorText: '',
+                isRequired: false,
+              ),
+              const SizedBox(height: 24),
+              
+              // Submit Button
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Validasi
+                    bool isValid = true;
+                    
+                    // Validasi nama
+                    if (nameController.text.trim().isEmpty) {
+                      nameError.value = 'Nama makanan tidak boleh kosong';
+                      isValid = false;
+                    } else {
+                      nameError.value = '';
+                    }
+                    
+                    // Validasi kalori
+                    try {
+                      final calories = double.parse(caloriesController.text);
+                      if (calories < 0) {
+                        caloriesError.value = 'Kalori tidak boleh negatif';
+                        isValid = false;
+                      } else {
+                        caloriesError.value = '';
+                      }
+                    } catch (e) {
+                      caloriesError.value = 'Masukkan nilai kalori yang valid';
+                      isValid = false;
+                    }
+                    
+                    if (!isValid) return;
+                    
+                    // Buat objek makanan kustom
+                    final customFood = FoodNutrition(
+                      name: nameController.text.trim(),
+                      portion: double.tryParse(portionController.text) ?? 100,
+                      calories: double.tryParse(caloriesController.text) ?? 0,
+                      protein: double.tryParse(proteinController.text) ?? 0,
+                      carbs: double.tryParse(carbsController.text) ?? 0,
+                      fat: double.tryParse(fatController.text) ?? 0,
+                      foodGroup: selectedFoodGroup.value,
+                      consumedAt: DateTime.now(),
                     );
+                    
+                    // Tutup dialog
+                    Get.back();
+                    
+                    // Tampilkan dialog porsi (opsional)
+                    _showPortionDialog(customFood);
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppStyles.primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Tambahkan Makanan',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'Signika',
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
             ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
+Widget _buildInputField({
+  required String label,
+  required TextEditingController controller,
+  required String hintText,
+  TextInputType keyboardType = TextInputType.text,
+  required String errorText,
+  required bool isRequired,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: label,
+              style: const TextStyle(
+                fontFamily: 'Signika',
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+              ),
+            ),
+            if (isRequired)
+              const TextSpan(
+                text: ' *',
+                style: TextStyle(
+                  fontFamily: 'Signika',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.red,
+                ),
+              ),
+          ],
+        ),
+      ),
+      const SizedBox(height: 8),
+      TextField(
+        controller: controller,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          hintText: hintText,
+          errorText: errorText.isEmpty ? null : errorText,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.grey[100],
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 14,
+          ),
+        ),
+      ),
+    ],
+  );
+}
 
   Widget _buildNutrientBubble(String label, String value, Color color) {
     return Container(
