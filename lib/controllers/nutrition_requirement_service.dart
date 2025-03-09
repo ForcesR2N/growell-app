@@ -287,11 +287,41 @@ class DailyNutritionController extends GetxController {
     try {
       isLoading.value = true;
 
-      // Validate input
-      if (!validateInput(age, weight)) return;
+      // Validate input directly instead of calling a separate method
+      bool isValid = true;
+      ageError.value = '';
+      weightError.value = '';
 
-      final ageInMonths = int.parse(age);
-      final weightInKg = double.parse(weight);
+      // Validate age
+      int ageInMonths;
+      double weightInKg;
+
+      try {
+        ageInMonths = int.parse(age);
+        if (ageInMonths <= 0 || ageInMonths > 24) {
+          ageError.value = 'Usia harus antara 1-24 bulan';
+          isValid = false;
+        }
+      } catch (e) {
+        ageError.value = 'Usia tidak valid';
+        isValid = false;
+        ageInMonths = 0; // Default value to prevent further errors
+      }
+
+      // Validate weight
+      try {
+        weightInKg = double.parse(weight);
+        if (weightInKg <= 0 || weightInKg > 30) {
+          weightError.value = 'Berat badan tidak valid';
+          isValid = false;
+        }
+      } catch (e) {
+        weightError.value = 'Berat badan tidak valid';
+        isValid = false;
+        weightInKg = 0; // Default value to prevent further errors
+      }
+
+      if (!isValid) return;
 
       // Use the enhanced nutrition service for calculations
       final requirements = NutritionRequirementService.getCompleteRequirements(
