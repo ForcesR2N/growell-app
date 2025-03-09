@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:growell_app/controllers/nutrition_requirement_service.dart';
@@ -9,7 +9,9 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 
 class DailyNutritionPage extends GetView<DailyNutritionController> {
-  const DailyNutritionPage({Key? key}) : super(key: key);
+  DailyNutritionPage({Key? key}) : super(key: key);
+
+  final controller = Get.find<DailyNutritionController>();
 
   @override
   Widget build(BuildContext context) {
@@ -95,6 +97,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                 _buildBabyDataInputSection(),
                 const SizedBox(height: 24),
 
+                // Add Food Section
                 // Add Food Section
                 _buildFoodLogSection(),
                 const SizedBox(height: 24),
@@ -286,12 +289,12 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
   Widget _buildNutritionSummaryCard() {
     final percentages = controller.getNutritionPercentages();
 
-    // Cek usia bayi untuk menampilkan banner ASI
+    // Check baby's age to display ASI banner
     int ageInMonths = 0;
     try {
       ageInMonths = int.parse(controller.ageController.text);
     } catch (e) {
-      // Default ke 0 jika gagal parse
+      // Default to 0 if parsing fails
     }
     final bool isUnder6Months = ageInMonths > 0 && ageInMonths < 6;
 
@@ -302,7 +305,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Banner Rekomendasi ASI Eksklusif untuk bayi < 6 bulan
+          // ASI Exclusive Recommendation banner for babies < 6 months
           if (isUnder6Months)
             Container(
               padding: const EdgeInsets.all(12),
@@ -425,7 +428,6 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ),
     );
   }
-
   Widget _buildEmptyState(IconData icon, String title, String subtitle) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 24),
@@ -756,7 +758,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                 ),
               ),
               onPressed: () {
-                // Validasi input terlebih dahulu
+                // Validate input first
                 bool isValid = true;
 
                 // Validate age
@@ -789,7 +791,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                 }
 
                 if (!isValid) {
-                  // Jika validasi gagal, tampilkan snackbar
+                  // Show snackbar if validation fails
                   Get.snackbar(
                     'Validasi',
                     'Mohon lengkapi data dengan benar',
@@ -818,6 +820,187 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
     );
   }
 
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: AppStyles.cardDecoration,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.child_care,
+                color: AppStyles.primaryColor,
+                size: 22,
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                'Data Bayi',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'Signika',
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: controller.ageController,
+                  decoration: InputDecoration(
+                    labelText: 'Usia (bulan)',
+                    labelStyle: const TextStyle(
+                      color: AppStyles.primaryColor,
+                      fontFamily: 'Signika',
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: AppStyles.defaultRadius,
+                      borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: AppStyles.defaultRadius,
+                      borderSide:
+                          const BorderSide(color: AppStyles.primaryColor),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 12),
+                    errorText: controller.ageError.value.isEmpty
+                        ? null
+                        : controller.ageError.value,
+                  ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(2),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: TextField(
+                  controller: controller.weightController,
+                  decoration: InputDecoration(
+                    labelText: 'Berat (kg)',
+                    labelStyle: const TextStyle(
+                      color: AppStyles.primaryColor,
+                      fontFamily: 'Signika',
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: AppStyles.defaultRadius,
+                      borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: AppStyles.defaultRadius,
+                      borderSide:
+                          const BorderSide(color: AppStyles.primaryColor),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 12),
+                    errorText: controller.weightError.value.isEmpty
+                        ? null
+                        : controller.weightError.value,
+                  ),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'^\d*\.?\d{0,1}')),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton.icon(
+              icon: const Icon(
+                Icons.calculate,
+                color: Colors.yellow,
+              ),
+              label: const Text(
+                'Hitung Kebutuhan Nutrisi',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontFamily: 'Signika',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppStyles.primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: AppStyles.defaultRadius,
+                ),
+              ),
+              onPressed: () {
+                // Validate input first
+                bool isValid = true;
+
+                // Validate age
+                try {
+                  final ageNum = int.parse(controller.ageController.text);
+                  if (ageNum <= 0 || ageNum > 24) {
+                    controller.ageError.value = 'Usia harus antara 1-24 bulan';
+                    isValid = false;
+                  } else {
+                    controller.ageError.value = '';
+                  }
+                } catch (e) {
+                  controller.ageError.value = 'Usia tidak valid';
+                  isValid = false;
+                }
+
+                // Validate weight
+                try {
+                  final weightNum =
+                      double.parse(controller.weightController.text);
+                  if (weightNum <= 0 || weightNum > 30) {
+                    controller.weightError.value = 'Berat badan tidak valid';
+                    isValid = false;
+                  } else {
+                    controller.weightError.value = '';
+                  }
+                } catch (e) {
+                  controller.weightError.value = 'Berat badan tidak valid';
+                  isValid = false;
+                }
+
+                if (!isValid) {
+                  // Show snackbar if validation fails
+                  Get.snackbar(
+                    'Validasi',
+                    'Mohon lengkapi data dengan benar',
+                    backgroundColor: Colors.red[100],
+                    colorText: Colors.red[900],
+                  );
+                  return;
+                }
+
+                _showLoadingDialog();
+
+                Future.delayed(const Duration(seconds: 1), () {
+                  Get.back();
+                  controller.calculateRequirements(
+                    controller.ageController.text,
+                    controller.weightController.text,
+                  );
+
+                  _showSuccessDialog();
+                });
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
   void _showLoadingDialog() {
     Get.dialog(
       Dialog(
@@ -839,13 +1022,13 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: [
+            children: const [
               CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF91C788)),
                 strokeWidth: 3,
               ),
-              const SizedBox(height: 15),
-              const Text(
+              SizedBox(height: 15),
+              Text(
                 'Menghitung...',
                 style: TextStyle(
                   fontSize: 16,
@@ -857,7 +1040,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
           ),
         ),
       ),
-      barrierDismissible: false, // Tidak bisa ditutup selama proses loading
+      barrierDismissible: false, // Cannot be closed during loading
     );
   }
 
@@ -874,8 +1057,8 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: [
-              const CircleAvatar(
+            children: const [
+              CircleAvatar(
                 radius: 30,
                 backgroundColor: Color(0xFF91C788),
                 child: Icon(
@@ -884,8 +1067,8 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                   size: 40,
                 ),
               ),
-              const SizedBox(height: 20),
-              const Text(
+              SizedBox(height: 20),
+              Text(
                 'Berhasil!',
                 style: TextStyle(
                   fontSize: 20,
@@ -893,8 +1076,8 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 10),
-              const Text(
+              SizedBox(height: 10),
+              Text(
                 'Kebutuhan nutrisi telah dihitung',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -925,14 +1108,14 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
-                children: [
-                  const Icon(
+                children: const [
+                  Icon(
                     Icons.restaurant,
                     color: AppStyles.primaryColor,
                     size: 22,
                   ),
-                  const SizedBox(width: 8),
-                  const Text(
+                  SizedBox(width: 8),
+                  Text(
                     'Catatan Makan',
                     style: TextStyle(
                       fontSize: 16,
@@ -953,13 +1136,13 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
           const SizedBox(height: 16),
 
           // Food Log Empty State or Food List
-          controller.consumedFoods.isEmpty
+          Obx(() => controller.consumedFoods.isEmpty
               ? _buildEmptyState(
                   Icons.no_food,
                   'Belum ada makanan hari ini',
                   'Tap tombol + untuk menambah makanan',
                 )
-              : _buildFoodLogList(),
+              : _buildFoodLogList()),
 
           const SizedBox(height: 20),
 
@@ -1017,7 +1200,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
     );
   }
 
-  Widget _buildFoodItemCard(FoodNutrition food, VoidCallback onTap) {
+    Widget _buildFoodItemCard(FoodNutrition food, VoidCallback onTap) {
     final foodGroup = food.foodGroup ?? 'Lainnya';
     final groupColor = _getFoodGroupColor(foodGroup);
     final timeString = food.consumedAt != null
@@ -1191,7 +1374,9 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       if (ageInMonths < 6) {
         return const SizedBox.shrink();
       }
-    } catch (e) {}
+    } catch (e) {
+      // If parsing fails, default to 0
+    }
 
     final percentages = controller.getNutritionPercentages();
 
@@ -1211,6 +1396,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
     if (lowestPercentage > 70) {
       return const SizedBox.shrink();
     }
+    
     List<FoodNutrition> recommendedFoods = [];
     String nutrientName = '';
 
@@ -1246,14 +1432,14 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            children: [
-              const Icon(
+            children: const [
+              Icon(
                 Icons.lightbulb_outline,
                 color: Colors.orange,
                 size: 22,
               ),
-              const SizedBox(width: 8),
-              const Text(
+              SizedBox(width: 8),
+              Text(
                 'Rekomendasi Makanan',
                 style: TextStyle(
                   fontSize: 16,
@@ -1303,7 +1489,6 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ),
     );
   }
-
   Widget _buildRecommendedFoodItem(FoodNutrition food, String focusNutrient) {
     final foodGroup = food.foodGroup ?? 'Lainnya';
     final groupColor = _getFoodGroupColor(foodGroup);
@@ -1579,18 +1764,17 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
     }
     _showActualFoodSelectionDialog();
   }
-
   void _showActualFoodSelectionDialog() {
     final RxList<FoodNutrition> filteredFoods =
         RxList<FoodNutrition>.from(CommonBabyFood.basicFoods);
     final TextEditingController searchController = TextEditingController();
 
-    // Cek jika bayi < 6 bulan, tambahkan indikator pada makanan yang tidak direkomendasikan
+    // Check if baby < 6 months, add indicator on foods that are not recommended
     int ageInMonths = 0;
     try {
       ageInMonths = int.parse(controller.ageController.text);
     } catch (e) {
-      // Default ke 0 jika gagal parse
+      // Default to 0 if parsing fails
     }
     final bool isUnder6Months = ageInMonths < 6;
 
@@ -1650,13 +1834,13 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                     border: Border.all(color: const Color(0xFF90CAF9)),
                   ),
                   child: Row(
-                    children: [
-                      const Icon(
+                    children: const [
+                      Icon(
                         Icons.info_outline,
                         color: Color(0xFF1E88E5),
                       ),
-                      const SizedBox(width: 8),
-                      const Expanded(
+                      SizedBox(width: 8),
+                      Expanded(
                         child: Text(
                           'WHO merekomendasikan ASI eksklusif untuk bayi 0-6 bulan',
                           style: TextStyle(
@@ -1735,7 +1919,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                 ),
               ),
 
-              // Daftar Makanan
+              // Food List
               Flexible(
                 child: Obx(() => ListView.builder(
                       shrinkWrap: true,
@@ -1745,7 +1929,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                         final foodGroup = food.foodGroup ?? 'Lainnya';
                         final groupColor = _getFoodGroupColor(foodGroup);
 
-                        // Tandai makanan yang direkomendasikan untuk bayi < 6 bulan (hanya ASI/Formula)
+                        // Mark foods recommended for babies < 6 months (only breast milk/formula)
                         final bool isRecommended = !isUnder6Months ||
                             (food.name.toLowerCase().contains('asi') ||
                                 food.name
@@ -1849,7 +2033,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                             ),
                             onTap: () {
                               if (isUnder6Months && !isRecommended) {
-                                // Tampilkan dialog konfirmasi untuk makanan yang tidak direkomendasikan
+                                // Show confirmation dialog for non-recommended foods
                                 _showConfirmNonRecommendedFoodDialog(food);
                               } else {
                                 Get.back();
@@ -1995,17 +2179,16 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ),
     );
   }
-// Perbaikan: hapus deklarasi method di dalam method dan buat sebagai method terpisah di class DailyNutritionPage
 
   void _showASIInformationDialog() {
     Get.dialog(
       Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        // Gunakan widget ScrollConfiguration untuk menyembunyikan scrollbar
+        // Use ScrollConfiguration to hide scrollbar
         child: ScrollConfiguration(
           behavior: const ScrollBehavior().copyWith(overscroll: false),
           child: SingleChildScrollView(
-            // Bungkus dengan SingleChildScrollView untuk memungkinkan scrolling
+            // Wrap with SingleChildScrollView to enable scrolling
             child: Container(
               padding: const EdgeInsets.all(24),
               child: Column(
@@ -2040,7 +2223,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Apa itu ASI Eksklusif
+                  // What is Exclusive Breastfeeding
                   const Text(
                     'Apa itu ASI Eksklusif?',
                     style: TextStyle(
@@ -2059,7 +2242,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Manfaat ASI Eksklusif
+                  // Benefits of Exclusive Breastfeeding
                   const Text(
                     'Manfaat ASI Eksklusif',
                     style: TextStyle(
@@ -2116,7 +2299,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Kapan Memulai MPASI
+                  // When to Start Complementary Feeding
                   const Text(
                     'Kapan Mulai Memberikan MPASI?',
                     style: TextStyle(
@@ -2198,7 +2381,6 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       barrierDismissible: true,
     );
   }
-
   void _showConfirmNonRecommendedFoodDialog(FoodNutrition food) {
     Get.dialog(
       Dialog(
@@ -2604,7 +2786,6 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ),
     );
   }
-
   Widget _buildInputField({
     required String label,
     required TextEditingController controller,
@@ -2770,7 +2951,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                          Text(
                           food.name,
                           style: const TextStyle(
                             fontSize: 18,
@@ -3035,7 +3216,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text('Tutup', style: TextStyle(color: Colors.white)),
+                  child: const Text('Tutup', style: TextStyle(color: Colors.white)),
                 ),
               ),
             ],
@@ -3138,7 +3319,6 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ],
     );
   }
-
   void _showDateSelectionDialog() {
     Get.dialog(
       Dialog(
@@ -3261,7 +3441,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Tutup',
                       style: TextStyle(color: Colors.white),
                     ),

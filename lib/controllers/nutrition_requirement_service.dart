@@ -1,3 +1,4 @@
+// lib/controllers/nutrition_requirement_service.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -106,8 +107,8 @@ class NutritionRequirementService {
 }
 
 class DailyNutritionController extends GetxController {
-TextEditingController? ageController;
-TextEditingController? weightController;
+  late TextEditingController ageController;
+  late TextEditingController weightController;
 
   final isDisposed = false.obs;
 
@@ -158,18 +159,14 @@ TextEditingController? weightController;
   @override
   void onClose() {
     isDisposed.value = true;
- try {
-
-    ageController?.dispose();
-    weightController?.dispose();
-    
-    ageController = null;
-    weightController = null;
-  } catch (e) {
-    print('Error disposing controllers: $e');
+    try {
+      ageController.dispose();
+      weightController.dispose();
+    } catch (e) {
+      print('Error disposing controllers: $e');
+    }
+    super.onClose();
   }
-  super.onClose();
-}
 
   bool get isActive => !isDisposed.value;
 
@@ -372,7 +369,6 @@ TextEditingController? weightController;
       isLoading.value = false;
     }
   }
-
   void calculateWeightStatus(int ageInMonths, double weightInKg) {
     final weightChartData = [
       [0, 2.9, 4.4],
@@ -403,14 +399,14 @@ TextEditingController? weightController;
           for (int i = 0; i < weightChartData.length - 1; i++) {
             if (ageInMonths > weightChartData[i][0] &&
                 ageInMonths < weightChartData[i + 1][0]) {
-              final lowerAge = weightChartData[i][0];
-              final upperAge = weightChartData[i + 1][0];
+              final lowerAge = weightChartData[i][0] as int;
+              final upperAge = weightChartData[i + 1][0] as int;
               final ratio = (ageInMonths - lowerAge) / (upperAge - lowerAge);
 
-              final lowerMin = weightChartData[i][1];
-              final upperMin = weightChartData[i + 1][1];
-              final lowerMax = weightChartData[i][2];
-              final upperMax = weightChartData[i + 1][2];
+              final lowerMin = weightChartData[i][1] as double;
+              final upperMin = weightChartData[i + 1][1] as double;
+              final lowerMax = weightChartData[i][2] as double;
+              final upperMax = weightChartData[i + 1][2] as double;
 
               final interpolatedMin = lowerMin + (upperMin - lowerMin) * ratio;
               final interpolatedMax = lowerMax + (upperMax - lowerMax) * ratio;
@@ -423,16 +419,19 @@ TextEditingController? weightController;
       },
     );
 
-    idealWeightLow.value = idealWeight[1].toDouble();
-    idealWeightHigh.value = idealWeight[2].toDouble();
+    double minWeight = (idealWeight[1] as num).toDouble();
+  double maxWeight = (idealWeight[2] as num).toDouble();
 
-    if (weightInKg < idealWeight[1]) {
-      weightStatus.value = 'underweight';
-    } else if (weightInKg > idealWeight[2]) {
-      weightStatus.value = 'overweight';
-    } else {
-      weightStatus.value = 'normal';
-    }
+    idealWeightLow.value = minWeight;
+  idealWeightHigh.value = maxWeight;
+
+    if (weightInKg < minWeight) {
+    weightStatus.value = 'underweight';
+  } else if (weightInKg > maxWeight) {
+    weightStatus.value = 'overweight';
+  } else {
+    weightStatus.value = 'normal';
+  }
   }
 
   String getWeightStatusAdvice() {
