@@ -14,7 +14,7 @@ class AppStyles {
   static const Color warningColor = Color(0xFFFF9800);
   static const Color successColor = Color(0xFF4CAF50);
   static const Color infoColor = Color(0xFF2196F3);
-  
+
   static BoxDecoration cardDecoration = BoxDecoration(
     color: Colors.white,
     borderRadius: BorderRadius.circular(20),
@@ -26,7 +26,7 @@ class AppStyles {
       ),
     ],
   );
-  
+
   static BorderRadius defaultRadius = BorderRadius.circular(12);
 }
 
@@ -54,7 +54,8 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.calendar_today, color: AppStyles.primaryColor),
+              icon: const Icon(Icons.calendar_today,
+                  color: AppStyles.primaryColor),
               onPressed: () => _showDateSelectionDialog(),
             ),
             Container(
@@ -73,23 +74,24 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
           child: Align(
             alignment: Alignment.centerLeft,
             child: Obx(() => Padding(
-              padding: const EdgeInsets.only(left: 16, bottom: 8),
-              child: Text(
-                'Nutrisi Harian - ${controller.dateFormatted.value}',
-                style: const TextStyle(
-                  color: Color(0xFF7B7B7B),
-                  fontSize: 16,
-                  fontFamily: 'Signika',
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            )),
+                  padding: const EdgeInsets.only(left: 16, bottom: 8),
+                  child: Text(
+                    'Nutrisi Harian - ${controller.dateFormatted.value}',
+                    style: const TextStyle(
+                      color: Color(0xFF7B7B7B),
+                      fontSize: 16,
+                      fontFamily: 'Signika',
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                )),
           ),
         ),
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator(
+          return const Center(
+              child: CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(AppStyles.primaryColor),
           ));
         }
@@ -104,9 +106,9 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Baby Profile Summary Card
-                if (controller.targetCalories.value > 0) 
+                if (controller.targetCalories.value > 0)
                   _buildProfileSummaryCard(),
-                
+
                 // Nutrition Summary Card
                 _buildNutritionSummaryCard(),
                 const SizedBox(height: 24),
@@ -118,7 +120,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                 // Add Food Section
                 _buildFoodLogSection(),
                 const SizedBox(height: 24),
-                
+
                 // Recommendations based on current nutrition status
                 if (controller.targetCalories.value > 0)
                   _buildNutritionRecommendations(),
@@ -127,19 +129,17 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
           ),
         );
       }),
-      floatingActionButton: Obx(() => 
-        controller.consumedFoods.isNotEmpty 
+      floatingActionButton: Obx(() => controller.consumedFoods.isNotEmpty
           ? FloatingActionButton(
               backgroundColor: AppStyles.primaryColor,
               child: const Icon(Icons.bar_chart),
               onPressed: () => _showNutritionDetails(),
               tooltip: 'Detail Nutrisi',
             )
-          : const SizedBox.shrink()
-      ),
+          : const SizedBox.shrink()),
     );
   }
-  
+
   Widget _buildProfileSummaryCard() {
     return Container(
       width: double.infinity,
@@ -195,7 +195,8 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                     style: TextStyle(
                       fontSize: 14,
                       fontFamily: 'Signika',
-                      color: _getWeightStatusColor(controller.weightStatus.value),
+                      color:
+                          _getWeightStatusColor(controller.weightStatus.value),
                     ),
                   ),
                 ],
@@ -236,8 +237,9 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ),
     );
   }
-  
-  Widget _buildNutrientSummaryBox(String title, String value, IconData icon, Color color) {
+
+  Widget _buildNutrientSummaryBox(
+      String title, String value, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -276,7 +278,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ),
     );
   }
-  
+
   String _getWeightStatusText(String status) {
     switch (status) {
       case 'underweight':
@@ -289,7 +291,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
         return 'Belum dihitung';
     }
   }
-  
+
   Color _getWeightStatusColor(String status) {
     switch (status) {
       case 'underweight':
@@ -357,21 +359,21 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
             ],
           ),
           const SizedBox(height: 20),
-          controller.targetCalories.value == 0 
+          controller.targetCalories.value == 0
               ? _buildEmptyState(
                   Icons.info_outline,
                   'Belum ada data nutrisi',
                   'Masukkan usia dan berat bayi terlebih dahulu',
                 )
               : SizedBox(
-                height: 240,
-                child: BarChart(_createNutritionBarData(percentages)),
-              ),
+                  height: 240,
+                  child: BarChart(_createNutritionBarData(percentages)),
+                ),
         ],
       ),
     );
   }
-  
+
   Widget _buildEmptyState(IconData icon, String title, String subtitle) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 24),
@@ -407,7 +409,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ),
     );
   }
-  
+
   BarChartData _createNutritionBarData(Map<String, double> percentages) {
     return BarChartData(
       alignment: BarChartAlignment.spaceAround,
@@ -420,29 +422,33 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
             String nutrientName;
             String value;
             Color color;
-            
+
             switch (group.x) {
               case 0:
                 nutrientName = 'Kalori';
-                value = '${controller.consumedCalories.value.toStringAsFixed(0)}/${controller.targetCalories.value.toStringAsFixed(0)} kcal';
+                value =
+                    '${controller.consumedCalories.value.toStringAsFixed(0)}/${controller.targetCalories.value.toStringAsFixed(0)} kcal';
                 color = AppStyles.warningColor;
                 break;
               case 1:
                 nutrientName = 'Protein';
-                value = '${controller.consumedProtein.value.toStringAsFixed(1)}/${controller.targetProtein.value.toStringAsFixed(1)} g';
+                value =
+                    '${controller.consumedProtein.value.toStringAsFixed(1)}/${controller.targetProtein.value.toStringAsFixed(1)} g';
                 color = AppStyles.errorColor;
                 break;
               case 2:
                 nutrientName = 'Karbo';
-                value = '${controller.consumedCarbs.value.toStringAsFixed(1)}/${controller.targetCarbs.value.toStringAsFixed(1)} g';
+                value =
+                    '${controller.consumedCarbs.value.toStringAsFixed(1)}/${controller.targetCarbs.value.toStringAsFixed(1)} g';
                 color = AppStyles.successColor;
                 break;
               default:
                 nutrientName = 'Lemak';
-                value = '${controller.consumedFat.value.toStringAsFixed(1)}/${controller.targetFat.value.toStringAsFixed(1)} g';
+                value =
+                    '${controller.consumedFat.value.toStringAsFixed(1)}/${controller.targetFat.value.toStringAsFixed(1)} g';
                 color = AppStyles.infoColor;
             }
-            
+
             return BarTooltipItem(
               '$nutrientName\n$value\n${rod.toY.toStringAsFixed(0)}%',
               TextStyle(
@@ -459,11 +465,12 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
+            reservedSize: 60,
             getTitlesWidget: (value, meta) {
               IconData icon;
               Color color;
               String text;
-              
+
               switch (value.toInt()) {
                 case 0:
                   icon = Icons.local_fire_department;
@@ -485,7 +492,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                   color = AppStyles.infoColor;
                   text = 'Lemak';
               }
-              
+
               return Padding(
                 padding: const EdgeInsets.only(top: 12),
                 child: Column(
@@ -500,12 +507,12 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                         fontFamily: 'Signika',
                         fontWeight: FontWeight.w500,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
               );
             },
-            reservedSize: 40,
           ),
         ),
         leftTitles: AxisTitles(
@@ -555,7 +562,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
   BarChartGroupData _createBarGroup(int x, double value, Color color) {
     // Cap the value at 100% for visual display
     final displayValue = (value > 100 ? 100 : value).toDouble();
-    
+
     return BarChartGroupData(
       x: x,
       barRods: [
@@ -573,7 +580,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ],
     );
   }
-  
+
   Widget _buildBabyDataInputSection() {
     return Container(
       width: double.infinity,
@@ -619,13 +626,14 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: AppStyles.defaultRadius,
-                      borderSide: const BorderSide(color: AppStyles.primaryColor),
+                      borderSide:
+                          const BorderSide(color: AppStyles.primaryColor),
                     ),
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 12),
-                    errorText: controller.ageError.value.isEmpty 
-                      ? null 
-                      : controller.ageError.value,
+                        horizontal: 12, vertical: 12),
+                    errorText: controller.ageError.value.isEmpty
+                        ? null
+                        : controller.ageError.value,
                   ),
                   keyboardType: TextInputType.number,
                   inputFormatters: [
@@ -650,17 +658,20 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: AppStyles.defaultRadius,
-                      borderSide: const BorderSide(color: AppStyles.primaryColor),
+                      borderSide:
+                          const BorderSide(color: AppStyles.primaryColor),
                     ),
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 12),
-                    errorText: controller.weightError.value.isEmpty 
-                      ? null 
-                      : controller.weightError.value,
+                        horizontal: 12, vertical: 12),
+                    errorText: controller.weightError.value.isEmpty
+                        ? null
+                        : controller.weightError.value,
                   ),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,1}')),
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'^\d*\.?\d{0,1}')),
                   ],
                 ),
               ),
@@ -691,6 +702,10 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                   controller.ageController.text,
                   controller.weightController.text,
                 );
+                if (controller.ageError.value.isEmpty &&
+                    controller.weightError.value.isEmpty) {
+                  _showSuccessDialog();
+                }
               },
             ),
           ),
@@ -698,7 +713,61 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ),
     );
   }
-  
+
+  void _showSuccessDialog() {
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircleAvatar(
+                radius: 30,
+                backgroundColor: Color(0xFF91C788),
+                child: Icon(
+                  Icons.check,
+                  color: Colors.white,
+                  size: 40,
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Berhasil!',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontFamily: 'Signika',
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Kebutuhan nutrisi telah dihitung',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'Signika',
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: true,
+    );
+
+    // Tutup dialog setelah 2 detik
+    Future.delayed(const Duration(seconds: 2), () {
+      Get.back();
+    });
+  }
+
   Widget _buildFoodLogSection() {
     return Container(
       width: double.infinity,
@@ -737,7 +806,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
             ],
           ),
           const SizedBox(height: 16),
-          
+
           // Food Log Empty State or Food List
           controller.consumedFoods.isEmpty
               ? _buildEmptyState(
@@ -746,9 +815,9 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                   'Tap tombol + untuk menambah makanan',
                 )
               : _buildFoodLogList(),
-          
+
           const SizedBox(height: 20),
-          
+
           SizedBox(
             width: double.infinity,
             height: 48,
@@ -775,7 +844,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ),
     );
   }
-  
+
   Widget _buildFoodLogList() {
     return ListView.separated(
       shrinkWrap: true,
@@ -802,14 +871,14 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       },
     );
   }
-  
+
   Widget _buildFoodItemCard(FoodNutrition food, VoidCallback onTap) {
     final foodGroup = food.foodGroup ?? 'Lainnya';
     final groupColor = _getFoodGroupColor(foodGroup);
     final timeString = food.consumedAt != null
         ? DateFormat('HH:mm').format(food.consumedAt!)
         : 'Hari ini';
-    
+
     return Card(
       elevation: 0,
       color: Colors.white,
@@ -905,6 +974,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ),
     );
   }
+
   Widget _buildDot() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -916,7 +986,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ),
     );
   }
-  
+
   IconData _getFoodGroupIcon(String foodGroup) {
     switch (foodGroup) {
       case 'Fruit':
@@ -933,7 +1003,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
         return Icons.restaurant;
     }
   }
-  
+
   Color _getFoodGroupColor(String foodGroup) {
     switch (foodGroup) {
       case 'Fruit':
@@ -950,7 +1020,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
         return Colors.grey;
     }
   }
-  
+
   String _getFoodGroupTitle(String foodGroup) {
     switch (foodGroup) {
       case 'Fruit':
@@ -967,40 +1037,42 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
         return 'Lainnya';
     }
   }
-  
+
   Widget _buildNutritionRecommendations() {
     final percentages = controller.getNutritionPercentages();
-    
+
     // Find the nutrient with the lowest percentage
     String lowestNutrient = 'protein';
     double lowestPercentage = percentages['protein']!;
-    
+
     if (percentages['carbs']! < lowestPercentage) {
       lowestNutrient = 'carbs';
       lowestPercentage = percentages['carbs']!;
     }
-    
+
     if (percentages['fat']! < lowestPercentage) {
       lowestNutrient = 'fat';
       lowestPercentage = percentages['fat']!;
     }
-    
+
     // Skip recommendations if we have > 70% of everything
     if (lowestPercentage > 70) {
       return const SizedBox.shrink();
     }
-    
+
     // Get food recommendations based on the nutrient that's lacking
     List<FoodNutrition> recommendedFoods = [];
     String nutrientName = '';
-    
+
     switch (lowestNutrient) {
       case 'protein':
-        recommendedFoods = CommonBabyFood.getFoodsHighIn('protein').take(3).toList();
+        recommendedFoods =
+            CommonBabyFood.getFoodsHighIn('protein').take(3).toList();
         nutrientName = 'Protein';
         break;
       case 'carbs':
-        recommendedFoods = CommonBabyFood.getFoodsByGroup('Grain').take(3).toList();
+        recommendedFoods =
+            CommonBabyFood.getFoodsByGroup('Grain').take(3).toList();
         nutrientName = 'Karbohidrat';
         break;
       case 'fat':
@@ -1012,11 +1084,11 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
         nutrientName = 'Lemak';
         break;
     }
-    
+
     if (recommendedFoods.isEmpty) {
       return const SizedBox.shrink();
     }
-    
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -1046,12 +1118,13 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
           const SizedBox(height: 12),
           _buildRecommendationAlert(nutrientName),
           const SizedBox(height: 16),
-          ...recommendedFoods.map((food) => _buildRecommendedFoodItem(food, lowestNutrient)),
+          ...recommendedFoods
+              .map((food) => _buildRecommendedFoodItem(food, lowestNutrient)),
         ],
       ),
     );
   }
-  
+
   Widget _buildRecommendationAlert(String nutrientName) {
     return Container(
       padding: const EdgeInsets.all(12),
@@ -1081,11 +1154,11 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ),
     );
   }
-  
+
   Widget _buildRecommendedFoodItem(FoodNutrition food, String focusNutrient) {
     final foodGroup = food.foodGroup ?? 'Lainnya';
     final groupColor = _getFoodGroupColor(foodGroup);
-    
+
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: Container(
@@ -1120,7 +1193,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       onTap: () => _showFoodDetails(food),
     );
   }
-  
+
   Widget _buildFoodNutrientInfo(FoodNutrition food, String focusNutrient) {
     switch (focusNutrient) {
       case 'protein':
@@ -1216,7 +1289,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                 AppStyles.infoColor,
                 Icons.opacity,
               ),
-              
+
               // Add other nutrients if available (micronutrients)
               if (controller.targetIron.value > 0) ...[
                 const SizedBox(height: 16),
@@ -1228,9 +1301,9 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                   Icons.bloodtype,
                 ),
               ],
-              
+
               const SizedBox(height: 24),
-              
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -1240,7 +1313,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                       controller.resetDaily();
                     },
                     icon: const Icon(
-                      Icons.refresh, 
+                      Icons.refresh,
                       color: AppStyles.errorColor,
                       size: 18,
                     ),
@@ -1270,9 +1343,9 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ),
     );
   }
-  
-  Widget _buildNutrientProgressBar(
-      String label, String value, double percentage, Color color, IconData icon) {
+
+  Widget _buildNutrientProgressBar(String label, String value,
+      double percentage, Color color, IconData icon) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1313,7 +1386,8 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
             ),
             Container(
               height: 8,
-              width: (Get.width - 48) * (percentage / 100 > 1 ? 1 : percentage / 100),
+              width: (Get.width - 48) *
+                  (percentage / 100 > 1 ? 1 : percentage / 100),
               decoration: BoxDecoration(
                 color: color,
                 borderRadius: BorderRadius.circular(4),
@@ -1410,7 +1484,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                     final food = CommonBabyFood.basicFoods[index];
                     final foodGroup = food.foodGroup ?? 'Lainnya';
                     final groupColor = _getFoodGroupColor(foodGroup);
-                    
+
                     return Container(
                       decoration: BoxDecoration(
                         border: Border(
@@ -1421,7 +1495,8 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                         ),
                       ),
                       child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
                         leading: Container(
                           width: 40,
                           height: 40,
@@ -1546,6 +1621,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ),
     );
   }
+
   void _showPortionDialog(FoodNutrition food) {
     final TextEditingController portionController = TextEditingController();
     portionController.text = food.portion.toString();
@@ -1636,17 +1712,21 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildNutrientBubble('Kalori', 
-                            '${(food.calories / food.portion * 100).toStringAsFixed(0)} kcal', 
+                        _buildNutrientBubble(
+                            'Kalori',
+                            '${(food.calories / food.portion * 100).toStringAsFixed(0)} kcal',
                             AppStyles.warningColor),
-                        _buildNutrientBubble('Protein', 
-                            '${(food.protein / food.portion * 100).toStringAsFixed(1)}g', 
+                        _buildNutrientBubble(
+                            'Protein',
+                            '${(food.protein / food.portion * 100).toStringAsFixed(1)}g',
                             AppStyles.errorColor),
-                        _buildNutrientBubble('Karbo', 
-                            '${(food.carbs / food.portion * 100).toStringAsFixed(1)}g', 
+                        _buildNutrientBubble(
+                            'Karbo',
+                            '${(food.carbs / food.portion * 100).toStringAsFixed(1)}g',
                             AppStyles.successColor),
-                        _buildNutrientBubble('Lemak', 
-                            '${(food.fat / food.portion * 100).toStringAsFixed(1)}g', 
+                        _buildNutrientBubble(
+                            'Lemak',
+                            '${(food.fat / food.portion * 100).toStringAsFixed(1)}g',
                             AppStyles.infoColor),
                       ],
                     ),
@@ -1674,7 +1754,8 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                     vertical: 12,
                   ),
                 ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,1}')),
                 ],
@@ -1734,7 +1815,8 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                     child: ElevatedButton(
                       onPressed: () {
                         if (portionController.text.isNotEmpty) {
-                          final portion = double.tryParse(portionController.text);
+                          final portion =
+                              double.tryParse(portionController.text);
                           if (portion != null && portion > 0) {
                             controller.addFood(food, portion);
                             Get.back();
@@ -1765,11 +1847,11 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ),
     );
   }
-  
+
   void _showFoodDetails(FoodNutrition food) {
     final foodGroup = food.foodGroup ?? 'Lainnya';
     final groupColor = _getFoodGroupColor(foodGroup);
-    
+
     Get.dialog(
       Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -1852,7 +1934,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ),
     );
   }
-  
+
   Widget _buildNutrientTable(FoodNutrition food) {
     return Table(
       columnWidths: const {
@@ -1860,42 +1942,51 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
         1: FlexColumnWidth(1),
       },
       children: [
-        _buildTableRow('Kalori', 
-          '${(food.calories / food.portion * 100).toStringAsFixed(0)} kcal', 
-          AppStyles.warningColor),
-        _buildTableRow('Protein', 
-          '${(food.protein / food.portion * 100).toStringAsFixed(1)} g', 
-          AppStyles.errorColor),
-        _buildTableRow('Karbohidrat', 
-          '${(food.carbs / food.portion * 100).toStringAsFixed(1)} g', 
-          AppStyles.successColor),
-        _buildTableRow('Lemak', 
-          '${(food.fat / food.portion * 100).toStringAsFixed(1)} g', 
-          AppStyles.infoColor),
+        _buildTableRow(
+            'Kalori',
+            '${(food.calories / food.portion * 100).toStringAsFixed(0)} kcal',
+            AppStyles.warningColor),
+        _buildTableRow(
+            'Protein',
+            '${(food.protein / food.portion * 100).toStringAsFixed(1)} g',
+            AppStyles.errorColor),
+        _buildTableRow(
+            'Karbohidrat',
+            '${(food.carbs / food.portion * 100).toStringAsFixed(1)} g',
+            AppStyles.successColor),
+        _buildTableRow(
+            'Lemak',
+            '${(food.fat / food.portion * 100).toStringAsFixed(1)} g',
+            AppStyles.infoColor),
         if (food.iron != null && food.iron! > 0)
-          _buildTableRow('Zat Besi', 
-            '${(food.iron! / food.portion * 100).toStringAsFixed(1)} mg', 
-            Colors.brown),
+          _buildTableRow(
+              'Zat Besi',
+              '${(food.iron! / food.portion * 100).toStringAsFixed(1)} mg',
+              Colors.brown),
         if (food.calcium != null && food.calcium! > 0)
-          _buildTableRow('Kalsium', 
-            '${(food.calcium! / food.portion * 100).toStringAsFixed(0)} mg', 
-            Colors.purple),
+          _buildTableRow(
+              'Kalsium',
+              '${(food.calcium! / food.portion * 100).toStringAsFixed(0)} mg',
+              Colors.purple),
         if (food.vitaminD != null && food.vitaminD! > 0)
-          _buildTableRow('Vitamin D', 
-            '${(food.vitaminD! / food.portion * 100).toStringAsFixed(1)} mcg', 
-            Colors.yellow[800]!),
+          _buildTableRow(
+              'Vitamin D',
+              '${(food.vitaminD! / food.portion * 100).toStringAsFixed(1)} mcg',
+              Colors.yellow[800]!),
         if (food.zinc != null && food.zinc! > 0)
-          _buildTableRow('Seng', 
-            '${(food.zinc! / food.portion * 100).toStringAsFixed(1)} mg', 
-            Colors.blueGrey),
+          _buildTableRow(
+              'Seng',
+              '${(food.zinc! / food.portion * 100).toStringAsFixed(1)} mg',
+              Colors.blueGrey),
         if (food.fiber != null && food.fiber! > 0)
-          _buildTableRow('Serat', 
-            '${(food.fiber! / food.portion * 100).toStringAsFixed(1)} g', 
-            Colors.green[800]!),
+          _buildTableRow(
+              'Serat',
+              '${(food.fiber! / food.portion * 100).toStringAsFixed(1)} g',
+              Colors.green[800]!),
       ],
     );
   }
-  
+
   TableRow _buildTableRow(String label, String value, Color color) {
     return TableRow(
       children: [
@@ -1937,7 +2028,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ],
     );
   }
-  
+
   void _showDateSelectionDialog() {
     Get.dialog(
       Dialog(
@@ -1963,7 +2054,8 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
                 lastDate: DateTime.now(),
                 onDateChanged: (date) {
                   controller.currentDate.value = date;
-                  controller.dateFormatted.value = DateFormat('dd MMMM yyyy').format(date);
+                  controller.dateFormatted.value =
+                      DateFormat('dd MMMM yyyy').format(date);
                   // In a real app you would load the data for this date
                   Get.back();
                 },
@@ -1984,7 +2076,7 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
       ),
     );
   }
-  
+
   void _showFoodLogHistory() {
     Get.dialog(
       Dialog(
@@ -2006,28 +2098,29 @@ class DailyNutritionPage extends GetView<DailyNutritionController> {
               ),
               const SizedBox(height: 16),
               controller.consumedFoods.isEmpty
-                ? _buildEmptyState(
-                    Icons.no_food,
-                    'Belum ada makanan dicatat hari ini',
-                    'Tambahkan makanan untuk melihat riwayat',
-                  )
-                : SizedBox(
-                    height: 300,
-                    child: ListView.separated(
-                      itemCount: controller.consumedFoods.length,
-                      separatorBuilder: (context, index) => const Divider(height: 1),
-                      itemBuilder: (context, index) {
-                        final food = controller.consumedFoods[index];
-                        return _buildFoodItemCard(
-                          food,
-                          () {
-                            Get.back();
-                            _showFoodDetails(food);
-                          },
-                        );
-                      },
+                  ? _buildEmptyState(
+                      Icons.no_food,
+                      'Belum ada makanan dicatat hari ini',
+                      'Tambahkan makanan untuk melihat riwayat',
+                    )
+                  : SizedBox(
+                      height: 300,
+                      child: ListView.separated(
+                        itemCount: controller.consumedFoods.length,
+                        separatorBuilder: (context, index) =>
+                            const Divider(height: 1),
+                        itemBuilder: (context, index) {
+                          final food = controller.consumedFoods[index];
+                          return _buildFoodItemCard(
+                            food,
+                            () {
+                              Get.back();
+                              _showFoodDetails(food);
+                            },
+                          );
+                        },
+                      ),
                     ),
-                  ),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
