@@ -307,18 +307,14 @@ class _FoodRecommendationPageState extends State<FoodRecommendationPage>
                 ),
                 child: TextButton(
                   onPressed: () {
-                    // Kembali ke halaman utama (halaman dengan bottom navigation)
                     Get.offAllNamed(Routes.HOME);
 
-                    // Kemudian setelah halaman dirender, kita pindah ke tab DailyNutrition
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                      // Temukan RxInt currentIndex yang digunakan di BottomNavigation
-                      // Sesuaikan dengan struktur yang ada di aplikasi Anda
                       try {
-                        final currentIndex =
-                            Get.find<RxInt>(tag: "bottomNavIndex");
-                        // Ubah nilai untuk memilih tab DailyNutrition (asumsi index 1)
-                        currentIndex.value = 2;
+                        final controller =
+                            Get.find<BottomNavigationController>();
+                        controller.navigateToTab(
+                            BottomNavigationController.DAILY_NUTRITION_TAB);
                       } catch (e) {
                         print("Error changing tab: $e");
                       }
