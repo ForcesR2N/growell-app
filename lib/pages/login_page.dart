@@ -19,7 +19,6 @@ class LoginPage extends GetView<AuthController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              // Logo atau ilustrasi di sini
               Container(
                 height: 160,
                 width: double.infinity,
@@ -30,7 +29,6 @@ class LoginPage extends GetView<AuthController> {
               ),
               const SizedBox(height: 40),
 
-              // Welcome Text
               Center(
                 child: Column(
                   children: [
@@ -64,8 +62,6 @@ class LoginPage extends GetView<AuthController> {
               ),
               const SizedBox(height: 40),
 
-              // Email Field
-
               Obx(() => CustomTextField(
                     controller: controller.emailController,
                     hintText: 'Enter your email',
@@ -77,7 +73,6 @@ class LoginPage extends GetView<AuthController> {
                   )),
               const SizedBox(height: 16),
 
-              // Password Field
               Obx(() => CustomTextField(
                     controller: controller.passwordController,
                     hintText: 'Password',
@@ -98,7 +93,6 @@ class LoginPage extends GetView<AuthController> {
                   )),
               const SizedBox(height: 16),
 
-              // Confirm Password untuk Register
               Obx(() => controller.isLogin.value
                   ? const SizedBox.shrink()
                   : Column(
@@ -131,7 +125,6 @@ class LoginPage extends GetView<AuthController> {
 
               const SizedBox(height: 40),
 
-              // Login/Register Button
               Obx(() => AuthButton(
                     text: controller.isLogin.value ? 'Login' : 'Register',
                     onPressed: () => controller.handleAuth(),
@@ -140,7 +133,6 @@ class LoginPage extends GetView<AuthController> {
 
               const SizedBox(height: 20),
 
-              // Toggle Login/Register
               Center(
                 child: TextButton(
                   onPressed: controller.toggleAuthMode,

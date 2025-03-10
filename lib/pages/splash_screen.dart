@@ -1,4 +1,3 @@
-// lib/pages/splash_screen.dart - Versi dengan Animasi Floating
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:async';
@@ -14,23 +13,21 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
-  // Controller untuk animasi muncul (fade in + scale)
   late AnimationController _scaleController;
   late Animation<double> _scaleAnimation;
 
-  // Controller untuk animasi melayang
   late AnimationController _floatController;
   late Animation<double> _floatAnimation;
 
-  // Controller untuk animasi teks
   late AnimationController _textController;
   late Animation<double> _textAnimation;
+
+  bool _hasNavigated = false;
 
   @override
   void initState() {
     super.initState();
 
-    // Animasi masuk
     _scaleController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
@@ -41,7 +38,6 @@ class _SplashScreenState extends State<SplashScreen>
       curve: Curves.easeOutBack,
     );
 
-    // Animasi melayang
     _floatController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1800),
@@ -54,10 +50,9 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
 
-    // Animasi teks
     _textController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 700),
     );
 
     _textAnimation = CurvedAnimation(
@@ -65,26 +60,26 @@ class _SplashScreenState extends State<SplashScreen>
       curve: Curves.easeInOut,
     );
 
-    // Jalankan animasi
     _scaleController.forward();
+    _floatController.repeat(reverse: true);
+    _textController.forward();
 
-    Future.delayed(const Duration(milliseconds: 600), () {
-      _floatController.repeat(reverse: true);
+    Timer(const Duration(milliseconds: 2500), () {
+      navigateToNextScreen();
     });
+  }
 
-    Future.delayed(const Duration(milliseconds: 1200), () {
-      _textController.forward();
-    });
+  void navigateToNextScreen() {
+    if (_hasNavigated) return;
 
-    // Navigasi ke halaman berikutnya
-    Timer(const Duration(seconds: 3), () {
-      final authService = Get.find<AuthService>();
-      if (authService.user.value != null) {
-        Get.offAllNamed(Routes.HOME);
-      } else {
-        Get.offAllNamed(Routes.AUTH);
-      }
-    });
+    final authService = Get.find<AuthService>();
+    if (authService.user.value != null) {
+      _hasNavigated = true;
+      Get.offAllNamed(Routes.HOME);
+    } else {
+      _hasNavigated = true;
+      Get.offAllNamed(Routes.AUTH);
+    }
   }
 
   @override
@@ -103,26 +98,23 @@ class _SplashScreenState extends State<SplashScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Expanded(
-              child: Center(
-                child: ScaleTransition(
-                  scale: _scaleAnimation,
-                  child: AnimatedBuilder(
-                    animation: _floatController,
-                    builder: (context, child) {
-                      return Transform.translate(
-                        offset: Offset(0, _floatAnimation.value),
-                        child: Image.asset(
-                          'assets/images/logo_app.png',
-                          width: 180,
-                          height: 180,
-                        ),
-                      );
-                    },
-                  ),
-                ),
+            ScaleTransition(
+              scale: _scaleAnimation,
+              child: AnimatedBuilder(
+                animation: _floatController,
+                builder: (context, child) {
+                  return Transform.translate(
+                    offset: Offset(0, _floatAnimation.value),
+                    child: Image.asset(
+                      'assets/images/logo_app.png',
+                      width: 180,
+                      height: 180,
+                    ),
+                  );
+                },
               ),
             ),
+            const SizedBox(height: 20),
             SlideTransition(
               position: Tween<Offset>(
                 begin: const Offset(0, 0.5),
@@ -130,17 +122,14 @@ class _SplashScreenState extends State<SplashScreen>
               ).animate(_textAnimation),
               child: FadeTransition(
                 opacity: _textAnimation,
-                child: const Padding(
-                  padding: EdgeInsets.only(bottom: 50.0),
-                  child: Text(
-                    'GroWell',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 40,
-                      fontFamily: 'Signika',
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 1.5,
-                    ),
+                child: const Text(
+                  'GroWell',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 40,
+                    fontFamily: 'Signika',
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 1.5,
                   ),
                 ),
               ),

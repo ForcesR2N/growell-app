@@ -58,7 +58,6 @@ class AuthController extends GetxController {
   bool validateForm() {
     bool isValid = true;
 
-    // Validate email
     if (emailController.text.isEmpty) {
       emailError.value = 'Email tidak boleh kosong';
       isValid = false;
@@ -69,7 +68,6 @@ class AuthController extends GetxController {
       emailError.value = '';
     }
 
-    // Validate password
     if (passwordController.text.isEmpty) {
       passwordError.value = 'Password tidak boleh kosong';
       isValid = false;
@@ -80,7 +78,6 @@ class AuthController extends GetxController {
       passwordError.value = '';
     }
 
-    // Validate confirm password for registration
     if (!isLogin.value) {
       if (confirmPasswordController.text.isEmpty) {
         confirmPasswordError.value = 'Konfirmasi password tidak boleh kosong';
@@ -116,7 +113,6 @@ class AuthController extends GetxController {
 
       if (result != null) {
         clearForm();
-        // Instead of immediately navigating, wait for AuthService to handle the navigation
         await Future.delayed(const Duration(milliseconds: 500));
       }
     } on FirebaseAuthException catch (e) {

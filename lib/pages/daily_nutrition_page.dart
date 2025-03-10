@@ -125,7 +125,10 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
           Obx(() => nutritionController.consumedFoods.isNotEmpty
               ? FloatingActionButton(
                   backgroundColor: AppStyles.primaryColor,
-                  child: const Icon(Icons.bar_chart),
+                  child: const Icon(
+                    Icons.bar_chart,
+                    color: Colors.white,
+                  ),
                   onPressed: () => _showNutritionDetails(),
                   tooltip: 'Detail Nutrisi',
                 )
@@ -1431,7 +1434,6 @@ Widget _buildFoodNutrientInfo(FoodNutrition food, String focusNutrient) {
 }
 
 void _showNutritionDetails() {
-  // Get controller instance
   final nutritionController = Get.find<DailyNutritionController>();
   final percentages = nutritionController.getNutritionPercentages();
 
