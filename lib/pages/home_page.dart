@@ -20,11 +20,9 @@ class _HomePageState extends State<HomePage> {
   final List<Map<String, dynamic>> _sliderItems = [
     {
       'image': 'assets/images/slider1.png',
-      'title': 'Nutrisi Terbaik untuk Si Kecil',
     },
     {
       'image': 'assets/images/slider2.png',
-      'title': 'Perkembangan Optimal',
     },
   ];
 
@@ -174,6 +172,7 @@ class _HomePageState extends State<HomePage> {
                     Expanded(
                       child: _buildMenuCard(
                         title: menuCards[0]['title'],
+                        subtitle: menuCards[0]['subtitle'],
                         color: menuCards[0]['color'],
                         icon: menuCards[0]['icon'],
                         ageGroupId: menuCards[0]['id'],
@@ -184,6 +183,7 @@ class _HomePageState extends State<HomePage> {
                     Expanded(
                       child: _buildMenuCard(
                         title: menuCards[1]['title'],
+                        subtitle: menuCards[1]['subtitle'],
                         color: menuCards[1]['color'],
                         icon: menuCards[1]['icon'],
                         ageGroupId: menuCards[1]['id'],
@@ -201,6 +201,7 @@ class _HomePageState extends State<HomePage> {
                     Expanded(
                       child: _buildMenuCard(
                         title: menuCards[2]['title'],
+                        subtitle: menuCards[2]['subtitle'],
                         color: menuCards[2]['color'],
                         icon: menuCards[2]['icon'],
                         ageGroupId: menuCards[2]['id'],
@@ -211,6 +212,7 @@ class _HomePageState extends State<HomePage> {
                     Expanded(
                       child: _buildMenuCard(
                         title: menuCards[3]['title'],
+                        subtitle: menuCards[3]['subtitle'],
                         color: menuCards[3]['color'],
                         icon: menuCards[3]['icon'],
                         ageGroupId: menuCards[3]['id'],
@@ -244,7 +246,6 @@ class _HomePageState extends State<HomePage> {
         borderRadius: BorderRadius.circular(16),
         child: Stack(
           children: [
-            // PageView untuk slide gambar
             PageView.builder(
               controller: _sliderController,
               onPageChanged: (index) {
@@ -257,8 +258,6 @@ class _HomePageState extends State<HomePage> {
                 return _buildSliderItem(_sliderItems[index]);
               },
             ),
-
-            // Indicator dots
             Positioned(
               bottom: 16,
               left: 0,
@@ -291,13 +290,10 @@ class _HomePageState extends State<HomePage> {
     return Stack(
       fit: StackFit.expand,
       children: [
-        // Placeholder untuk gambar
-        // Ganti dengan Image.asset saat memiliki gambar
         Image.asset(
           item['image'],
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
-            // Fallback jika gambar tidak ada
             return Container(
               color: const Color(0xFFEEF6ED),
               child: const Center(
@@ -310,8 +306,6 @@ class _HomePageState extends State<HomePage> {
             );
           },
         ),
-
-        // Gradient overlay untuk memastikan teks dapat dibaca
         Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -325,34 +319,13 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-
-        // Text content
-        Positioned(
-          bottom: 30,
-          left: 16,
-          right: 16,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                item['title'],
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontFamily: 'Signika',
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 4),
-            ],
-          ),
-        ),
       ],
     );
   }
 
   Widget _buildMenuCard({
     required String title,
+    required String subtitle,
     required Color color,
     required IconData icon,
     required String ageGroupId,
@@ -363,8 +336,7 @@ class _HomePageState extends State<HomePage> {
         if (isActive) {
           Get.to(
             () => FoodRecommendationPage(
-              ageGroup: ageGroupId,
-              title: title,
+              ageGroup: ageGroupId, title: '',
             ),
             transition: Transition.rightToLeft,
           );
@@ -417,6 +389,17 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 4),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Color(0xFF181D20),
+                fontSize: 12,
+                fontFamily: 'Raleway',
+                fontWeight: FontWeight.w700,
+                height: 1.33,
+              ),
+            ),
           ],
         ),
       ),
