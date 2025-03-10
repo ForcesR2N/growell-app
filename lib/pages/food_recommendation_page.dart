@@ -173,7 +173,6 @@ class _FoodRecommendationPageState extends State<FoodRecommendationPage>
                           const SizedBox(height: 24),
                         ],
 
-                        // Nutrition Section
                         if (data.nutritionNeeds != null) ...[
                           const Text(
                             'Kebutuhan Nutrisi',
