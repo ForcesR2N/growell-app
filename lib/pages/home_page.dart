@@ -15,6 +15,19 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final AuthService _authService = Get.find();
 
+  final PageController _sliderController = PageController();
+  int _currentPage = 0;
+  final List<Map<String, dynamic>> _sliderItems = [
+    {
+      'image': 'assets/images/slider1.png',
+      'title': 'Nutrisi Terbaik untuk Si Kecil',
+    },
+    {
+      'image': 'assets/images/slider2.png',
+      'title': 'Perkembangan Optimal',
+    },
+  ];
+
   final List<Map<String, dynamic>> menuCards = [
     {
       'id': 'ageGroup_0_6',
@@ -49,6 +62,40 @@ class _HomePageState extends State<HomePage> {
       'isActive': true,
     },
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _startAutoSlide();
+  }
+
+  @override
+  void dispose() {
+    _sliderController.dispose();
+    super.dispose();
+  }
+
+  void _startAutoSlide() {
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        if (_currentPage < _sliderItems.length - 1) {
+          _currentPage++;
+        } else {
+          _currentPage = 0;
+        }
+
+        if (_sliderController.hasClients) {
+          _sliderController.animateToPage(
+            _currentPage,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        }
+
+        _startAutoSlide();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,6 +164,8 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
               ),
+              const SizedBox(height: 16),
+              _buildImageSlider(),
               const SizedBox(height: 24),
               SizedBox(
                 height: cardHeight,
@@ -125,7 +174,6 @@ class _HomePageState extends State<HomePage> {
                     Expanded(
                       child: _buildMenuCard(
                         title: menuCards[0]['title'],
-                        subtitle: menuCards[0]['subtitle'],
                         color: menuCards[0]['color'],
                         icon: menuCards[0]['icon'],
                         ageGroupId: menuCards[0]['id'],
@@ -136,7 +184,6 @@ class _HomePageState extends State<HomePage> {
                     Expanded(
                       child: _buildMenuCard(
                         title: menuCards[1]['title'],
-                        subtitle: menuCards[1]['subtitle'],
                         color: menuCards[1]['color'],
                         icon: menuCards[1]['icon'],
                         ageGroupId: menuCards[1]['id'],
@@ -154,7 +201,6 @@ class _HomePageState extends State<HomePage> {
                     Expanded(
                       child: _buildMenuCard(
                         title: menuCards[2]['title'],
-                        subtitle: menuCards[2]['subtitle'],
                         color: menuCards[2]['color'],
                         icon: menuCards[2]['icon'],
                         ageGroupId: menuCards[2]['id'],
@@ -165,7 +211,6 @@ class _HomePageState extends State<HomePage> {
                     Expanded(
                       child: _buildMenuCard(
                         title: menuCards[3]['title'],
-                        subtitle: menuCards[3]['subtitle'],
                         color: menuCards[3]['color'],
                         icon: menuCards[3]['icon'],
                         ageGroupId: menuCards[3]['id'],
@@ -182,9 +227,132 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _buildImageSlider() {
+    return Container(
+      height: 180,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Stack(
+          children: [
+            // PageView untuk slide gambar
+            PageView.builder(
+              controller: _sliderController,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentPage = index;
+                });
+              },
+              itemCount: _sliderItems.length,
+              itemBuilder: (context, index) {
+                return _buildSliderItem(_sliderItems[index]);
+              },
+            ),
+
+            // Indicator dots
+            Positioned(
+              bottom: 16,
+              left: 0,
+              right: 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  _sliderItems.length,
+                  (index) => Container(
+                    width: index == _currentPage ? 16 : 8,
+                    height: 8,
+                    margin: const EdgeInsets.symmetric(horizontal: 2),
+                    decoration: BoxDecoration(
+                      color: index == _currentPage
+                          ? const Color(0xFF91C788)
+                          : Colors.white.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSliderItem(Map<String, dynamic> item) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // Placeholder untuk gambar
+        // Ganti dengan Image.asset saat memiliki gambar
+        Image.asset(
+          item['image'],
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            // Fallback jika gambar tidak ada
+            return Container(
+              color: const Color(0xFFEEF6ED),
+              child: const Center(
+                child: Icon(
+                  Icons.image,
+                  size: 50,
+                  color: Color(0xFF91C788),
+                ),
+              ),
+            );
+          },
+        ),
+
+        // Gradient overlay untuk memastikan teks dapat dibaca
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.transparent,
+                Colors.black.withOpacity(0.7),
+              ],
+              stops: const [0.6, 1.0],
+            ),
+          ),
+        ),
+
+        // Text content
+        Positioned(
+          bottom: 30,
+          left: 16,
+          right: 16,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                item['title'],
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontFamily: 'Signika',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 4),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildMenuCard({
     required String title,
-    required String subtitle,
     required Color color,
     required IconData icon,
     required String ageGroupId,
@@ -249,17 +417,6 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 4),
-            Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Color(0xFF181D20),
-                fontSize: 12,
-                fontFamily: 'Raleway',
-                fontWeight: FontWeight.w700,
-                height: 1.33,
-              ),
-            ),
           ],
         ),
       ),

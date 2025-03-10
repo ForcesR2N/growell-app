@@ -2405,7 +2405,7 @@ void _showCustomFoodInputDialog({bool isUnder6Months = false}) {
                     child: Text(
                       'Tambah Makanan Kustom',
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 16,
                         fontFamily: 'Signika',
                         fontWeight: FontWeight.w600,
                         color: AppStyles.primaryColor,
@@ -2633,6 +2633,7 @@ void _showCustomFoodInputDialog({bool isUnder6Months = false}) {
                   child: const Text(
                     'Tambahkan Makanan',
                     style: TextStyle(
+                      color: Colors.white,
                       fontSize: 16,
                       fontFamily: 'Signika',
                       fontWeight: FontWeight.w600,
