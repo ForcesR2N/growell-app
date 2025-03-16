@@ -287,9 +287,8 @@ class _FoodRecommendationPageState extends State<FoodRecommendationPage>
             right: 0,
             bottom: 0,
             child: Container(
-              // This container will be transparent
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              color: Colors.transparent, // Make this container transparent
+              color: Colors.transparent,
               child: Container(
                 width: double.infinity,
                 height: 56,
@@ -299,7 +298,6 @@ class _FoodRecommendationPageState extends State<FoodRecommendationPage>
                 ),
                 child: TextButton(
                   onPressed: () {
-                    // Navigation logic...
                     Get.offAllNamed(Routes.HOME);
 
                     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -315,10 +313,8 @@ class _FoodRecommendationPageState extends State<FoodRecommendationPage>
                   },
                   style: TextButton.styleFrom(
                     backgroundColor:
-                        Colors.transparent, // Button itself is transparent
-                    // Remove any padding from the TextButton
+                        Colors.transparent, 
                     padding: EdgeInsets.zero,
-                    // Remove any shape to avoid interfering with Container decoration
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(0),
                     ),

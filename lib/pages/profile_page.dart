@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:growell_app/auth/controllers/auth_service.dart';
 import 'package:growell_app/models/baby_profile_model.dart';
+import 'package:growell_app/routes/app_pages.dart';
 import 'package:growell_app/service/storage_service.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -18,7 +19,6 @@ class _ProfilePageState extends State<ProfilePage> {
     final storageService = Get.find<StorageService>();
     final user = authService.user.value;
 
-    // Get screen size
     final size = MediaQuery.of(context).size;
     final padding = MediaQuery.of(context).padding;
     final isSmallScreen = size.width < 360;
@@ -29,7 +29,6 @@ class _ProfilePageState extends State<ProfilePage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Header Section
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.all(isSmallScreen ? 16 : 24),
@@ -69,8 +68,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     SizedBox(height: isSmallScreen ? 16 : 24),
                     Container(
-                      width: size.width * 0.25, // Responsive width
-                      height: size.width * 0.25, // Keep aspect ratio
+                      width: size.width * 0.25, 
+                      height: size.width * 0.25, 
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: Colors.grey[100],
@@ -82,7 +81,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Center(
                         child: Icon(
                           Icons.person,
-                          size: size.width * 0.12, // Responsive icon size
+                          size: size.width * 0.12, 
                           color: Colors.blue,
                         ),
                       ),
@@ -205,15 +204,13 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
 
               SizedBox(height: isSmallScreen ? 16 : 24),
-
-              // Action Buttons
               Padding(
                 padding: EdgeInsets.only(
                   left: isSmallScreen ? 16 : 24,
                   right: isSmallScreen ? 16 : 24,
                   top: isSmallScreen ? 16 : 24,
                   bottom: padding.bottom +
-                      36, // Menambahkan padding bottom sesuai dengan safe area
+                      36,
                 ),
                 child: Column(
                   children: [
@@ -228,7 +225,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         shadowColor: Colors.black.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(10),
                         child: InkWell(
-                          onTap: () => Get.toNamed('/edit-profile'),
+                          onTap: () => Get.toNamed(Routes.EDIT_PROFILE),
                           borderRadius: BorderRadius.circular(10),
                           child: Padding(
                             padding: EdgeInsets.symmetric(
