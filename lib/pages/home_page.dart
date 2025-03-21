@@ -26,37 +26,54 @@ class _HomePageState extends State<HomePage> {
     },
   ];
 
+  // Enhanced menu cards with gradient colors and more appealing designs
   final List<Map<String, dynamic>> menuCards = [
     {
       'id': 'ageGroup_0_6',
       'title': 'ASI Eksklusif',
       'subtitle': '0-6 bulan',
-      'color': const Color(0xFFFFDED4),
+      'gradientColors': [
+        Color(0xFFFFD3BA),
+        Color(0xFFFFB199)
+      ], // Soft orange gradient
       'icon': Icons.child_care,
+      'iconColor': Color(0xFFF57C00), // Deep orange for icon
       'isActive': true,
     },
     {
       'id': 'ageGroup_6',
       'title': 'Awal MPASI',
       'subtitle': '6 bulan',
-      'color': const Color(0xFFD9D4FF),
+      'gradientColors': [
+        Color(0xFFD4E6FE),
+        Color(0xFFB3C7FF)
+      ], // Soft blue gradient
       'icon': Icons.restaurant,
+      'iconColor': Color(0xFF3F51B5), // Indigo for icon
       'isActive': true,
     },
     {
       'id': 'ageGroup_7_12',
       'title': 'Variasi MPASI',
       'subtitle': '7-12 bulan',
-      'color': const Color(0xFFF5C1C1),
+      'gradientColors': [
+        Color(0xFFFDD3E7),
+        Color(0xFFF48FB1)
+      ], // Soft pink gradient
       'icon': Icons.set_meal,
+      'iconColor': Color(0xFFE91E63), // Pink for icon
       'isActive': true,
     },
     {
       'id': 'ageGroup_13_24',
       'title': 'Makanan Keluarga',
       'subtitle': '13-24 bulan',
-      'color': const Color(0xFFC3F5C1),
+      'gradientColors': [
+        Color(0xFFD4EDDA),
+        Color(0xFFA3D9B0)
+      ], // Soft green gradient
       'icon': Icons.family_restroom,
+      'iconColor': Color(0xFF2E7D32), // Green for icon
       'isActive': true,
     },
   ];
@@ -173,8 +190,9 @@ class _HomePageState extends State<HomePage> {
                       child: _buildMenuCard(
                         title: menuCards[0]['title'],
                         subtitle: menuCards[0]['subtitle'],
-                        color: menuCards[0]['color'],
+                        gradientColors: menuCards[0]['gradientColors'],
                         icon: menuCards[0]['icon'],
+                        iconColor: menuCards[0]['iconColor'],
                         ageGroupId: menuCards[0]['id'],
                         isActive: menuCards[0]['isActive'],
                       ),
@@ -184,8 +202,9 @@ class _HomePageState extends State<HomePage> {
                       child: _buildMenuCard(
                         title: menuCards[1]['title'],
                         subtitle: menuCards[1]['subtitle'],
-                        color: menuCards[1]['color'],
+                        gradientColors: menuCards[1]['gradientColors'],
                         icon: menuCards[1]['icon'],
+                        iconColor: menuCards[1]['iconColor'],
                         ageGroupId: menuCards[1]['id'],
                         isActive: menuCards[1]['isActive'],
                       ),
@@ -202,8 +221,9 @@ class _HomePageState extends State<HomePage> {
                       child: _buildMenuCard(
                         title: menuCards[2]['title'],
                         subtitle: menuCards[2]['subtitle'],
-                        color: menuCards[2]['color'],
+                        gradientColors: menuCards[2]['gradientColors'],
                         icon: menuCards[2]['icon'],
+                        iconColor: menuCards[2]['iconColor'],
                         ageGroupId: menuCards[2]['id'],
                         isActive: menuCards[2]['isActive'],
                       ),
@@ -213,8 +233,9 @@ class _HomePageState extends State<HomePage> {
                       child: _buildMenuCard(
                         title: menuCards[3]['title'],
                         subtitle: menuCards[3]['subtitle'],
-                        color: menuCards[3]['color'],
+                        gradientColors: menuCards[3]['gradientColors'],
                         icon: menuCards[3]['icon'],
+                        iconColor: menuCards[3]['iconColor'],
                         ageGroupId: menuCards[3]['id'],
                         isActive: menuCards[3]['isActive'],
                       ),
@@ -326,8 +347,9 @@ class _HomePageState extends State<HomePage> {
   Widget _buildMenuCard({
     required String title,
     required String subtitle,
-    required Color color,
+    required List<Color> gradientColors,
     required IconData icon,
+    required Color iconColor,
     required String ageGroupId,
     required bool isActive,
   }) {
@@ -336,7 +358,8 @@ class _HomePageState extends State<HomePage> {
         if (isActive) {
           Get.to(
             () => FoodRecommendationPage(
-              ageGroup: ageGroupId, title: '',
+              ageGroup: ageGroupId,
+              title: '',
             ),
             transition: Transition.rightToLeft,
           );
@@ -351,11 +374,20 @@ class _HomePageState extends State<HomePage> {
       },
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: ShapeDecoration(
-          color: color,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: gradientColors,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: gradientColors[0].withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -364,21 +396,28 @@ class _HomePageState extends State<HomePage> {
           children: [
             Expanded(
               flex: 2,
-              child: Icon(
-                icon,
-                size: 48,
-                color: const Color(0xFF6F6F6F),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.3),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  size: 48,
+                  color: iconColor,
+                ),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             Expanded(
               child: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
                   title,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Color(0xFF6F6F6F),
+                  style: TextStyle(
+                    color: Colors.grey[800],
                     fontSize: 20,
                     fontFamily: 'Raleway',
                     fontWeight: FontWeight.w700,
@@ -389,15 +428,22 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 4),
-            Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Color(0xFF181D20),
-                fontSize: 12,
-                fontFamily: 'Raleway',
-                fontWeight: FontWeight.w700,
-                height: 1.33,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                subtitle,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Color(0xFF181D20),
+                  fontSize: 12,
+                  fontFamily: 'Raleway',
+                  fontWeight: FontWeight.w700,
+                  height: 1.33,
+                ),
               ),
             ),
           ],
