@@ -48,12 +48,14 @@ class EditProfileController extends GetxController {
         activityLevel.value = profile.activityLevel;
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal memuat data profil',
-        backgroundColor: Colors.red[100],
-        colorText: Colors.red[900],
-      );
+      Future.delayed(Duration.zero, () {
+        Get.snackbar(
+          'Error',
+          'Gagal memuat data profil',
+          backgroundColor: Colors.red[100],
+          colorText: Colors.red[900],
+        );
+      });
     } finally {
       isLoading.value = false;
     }
@@ -69,16 +71,19 @@ class EditProfileController extends GetxController {
     ageError.value = _validationService.validateBabyAge(age.value.toString());
     if (ageError.value.isNotEmpty) isValid = false;
 
-    weightError.value = _validationService.validateBabyWeight(weight.value.toString());
+    weightError.value =
+        _validationService.validateBabyWeight(weight.value.toString());
     if (weightError.value.isNotEmpty) isValid = false;
 
-    final mealsError = _validationService.validateMealsPerDay(mealsPerDay.value);
+    final mealsError =
+        _validationService.validateMealsPerDay(mealsPerDay.value);
     if (mealsError.isNotEmpty) {
       _errorHandler.showWarningSnackbar('Validasi', mealsError);
       isValid = false;
     }
 
-    final activityError = _validationService.validateActivityLevel(activityLevel.value);
+    final activityError =
+        _validationService.validateActivityLevel(activityLevel.value);
     if (activityError.isNotEmpty) {
       _errorHandler.showWarningSnackbar('Validasi', activityError);
       isValid = false;
@@ -94,6 +99,10 @@ class EditProfileController extends GetxController {
   }
 
   Future<void> updateProfile() async {
+    if (Get.isSnackbarOpen) {
+      Get.closeCurrentSnackbar();
+    }
+
     if (!validateForm()) {
       _errorHandler.showWarningSnackbar(
         'Validasi',
@@ -104,6 +113,9 @@ class EditProfileController extends GetxController {
 
     try {
       isLoading.value = true;
+
+      _showLoadingDialog();
+
       final profile = BabyProfile(
         userId: _authService.user.value!.uid,
         name: name.value,
@@ -116,15 +128,116 @@ class EditProfileController extends GetxController {
       );
 
       await _storageService.saveBabyProfile(profile);
-      _errorHandler.showSuccessSnackbar(
-        'Sukses',
-        'Profil berhasil diperbarui',
-      );
+
       Get.back();
+
+      _showSuccessDialog();
+
+      Future.delayed(const Duration(milliseconds: 2000), () {
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        Get.back();
+      });
     } catch (e) {
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
       _errorHandler.handleError(e, fallbackMessage: 'Gagal memperbarui profil');
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void _showLoadingDialog() {
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: Container(
+          width: 100,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                spreadRadius: 1,
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF91C788)),
+                strokeWidth: 3,
+              ),
+              SizedBox(height: 15),
+              Text(
+                'Menyimpan...',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'Signika',
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
+  }
+
+  void _showSuccessDialog() {
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              CircleAvatar(
+                radius: 30,
+                backgroundColor: Color(0xFF91C788),
+                child: Icon(
+                  Icons.check,
+                  color: Colors.white,
+                  size: 40,
+                ),
+              ),
+              SizedBox(height: 20),
+              Text(
+                'Berhasil!',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontFamily: 'Signika',
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'Profil berhasil diperbarui',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'Signika',
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: true,
+    );
   }
 }

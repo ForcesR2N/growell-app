@@ -25,107 +25,139 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(isSmallScreen ? 16 : 24),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
-                      spreadRadius: 1,
-                      blurRadius: 5,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Profile',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.5,
-                          ),
+      body: StreamBuilder<BabyProfile?>(
+        stream: storageService.getBabyProfile(user?.uid ?? ''),
+        builder: (context, snapshot) {
+          final babyProfile = snapshot.data;
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  // Enhanced Profile Header with gradient
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(isSmallScreen ? 20 : 28),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF91C788), Color(0xFF7EB379)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(30),
+                        bottomRight: Radius.circular(30),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF91C788).withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 15,
+                          offset: const Offset(0, 5),
                         ),
-                        Container(
-                          width: 30,
-                          height: 54,
-                          child: Image.asset(
-                            'assets/images/logo_app.png',
-                            fit: BoxFit.contain,
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Profile',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontFamily: 'Signika',
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.5,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Container(
+                              width: 30,
+                              height: 54,
+                              child: Image.asset(
+                                'assets/images/logo_app.png',
+                                fit: BoxFit.contain,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: isSmallScreen ? 20 : 30),
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            // Outer circle
+                            Container(
+                              width: size.width * 0.28,
+                              height: size.width * 0.28,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white.withOpacity(0.3),
+                              ),
+                            ),
+                            // Inner circle with icon
+                            Container(
+                              width: size.width * 0.25,
+                              height: size.width * 0.25,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 15,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  babyProfile?.gender == 'male'
+                                      ? Icons.face
+                                      : Icons.face_3,
+                                  size: size.width * 0.12,
+                                  color: const Color(0xFF91C788),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          user?.email ?? 'Email tidak tersedia',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                            letterSpacing: 0.5,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: isSmallScreen ? 16 : 24),
-                    Container(
-                      width: size.width * 0.25, 
-                      height: size.width * 0.25, 
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.grey[100],
-                        border: Border.all(
-                          color: Colors.blue.shade100,
-                          width: 3,
-                        ),
-                      ),
-                      child: Center(
-                        child: Icon(
-                          Icons.person,
-                          size: size.width * 0.12, 
-                          color: Colors.blue,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      user?.email ?? 'Email tidak tersedia',
-                      style: TextStyle(
-                        fontSize: isSmallScreen ? 14 : 16,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF272727),
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                  ),
 
-              SizedBox(height: isSmallScreen ? 16 : 24),
+                  SizedBox(height: isSmallScreen ? 24 : 32),
 
-              // Baby Profile Section
-              Padding(
-                padding:
-                    EdgeInsets.symmetric(horizontal: isSmallScreen ? 16 : 24),
-                child: StreamBuilder<BabyProfile?>(
-                  stream: storageService.getBabyProfile(user?.uid ?? ''),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-
-                    final babyProfile = snapshot.data;
-
-                    return Container(
+                  // Baby Profile Card
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: isSmallScreen ? 16 : 24),
+                    child: Container(
                       width: double.infinity,
-                      padding: EdgeInsets.all(isSmallScreen ? 16 : 24),
+                      padding: EdgeInsets.all(isSmallScreen ? 20 : 24),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withOpacity(0.04),
                             spreadRadius: 0,
-                            blurRadius: 10,
+                            blurRadius: 20,
                             offset: const Offset(0, 5),
                           ),
                         ],
@@ -136,154 +168,144 @@ class _ProfilePageState extends State<ProfilePage> {
                           Row(
                             children: [
                               Container(
-                                padding: EdgeInsets.all(isSmallScreen ? 6 : 8),
+                                padding:
+                                    EdgeInsets.all(isSmallScreen ? 10 : 12),
                                 decoration: BoxDecoration(
-                                  color: Colors.blue.shade50,
-                                  borderRadius: BorderRadius.circular(12),
+                                  color: const Color(0xFFE6F3E5),
+                                  borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: Icon(
                                   babyProfile?.gender == 'male'
-                                      ? Icons.face
-                                      : Icons.face_3,
-                                  color: Colors.blue,
-                                  size: isSmallScreen ? 20 : 24,
+                                      ? Icons.child_care
+                                      : Icons.child_care,
+                                  color: const Color(0xFF91C788),
+                                  size: isSmallScreen ? 22 : 26,
                                 ),
                               ),
-                              SizedBox(width: isSmallScreen ? 8 : 12),
+                              SizedBox(width: isSmallScreen ? 12 : 16),
                               Expanded(
-                                child: Text(
-                                  babyProfile?.name ?? 'Nama Bayi',
-                                  style: TextStyle(
-                                    fontSize: isSmallScreen ? 18 : 20,
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: 0.5,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      babyProfile?.name ?? 'Nama Bayi',
+                                      style: TextStyle(
+                                        fontSize: isSmallScreen ? 20 : 22,
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 0.5,
+                                        color: const Color(0xFF2E3E5C),
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      'Baby Profile',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey[600],
+                                        letterSpacing: 0.3,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(height: isSmallScreen ? 16 : 24),
-                          _buildInfoRow(
-                            'Usia',
-                            '${babyProfile?.age ?? 0} bulan',
-                            isSmallScreen,
+
+                          const SizedBox(height: 24),
+
+                          // Profile details with enhanced design
+                          _buildProfileDetail(
+                            icon: Icons.calendar_today,
+                            title: 'Usia',
+                            value: '${babyProfile?.age ?? 0} bulan',
+                            color: const Color(0xFFFFC0C0), // Soft red
+                            isSmallScreen: isSmallScreen,
                           ),
-                          _buildInfoRow(
-                            'Berat',
-                            '${babyProfile?.weight ?? 0} kg',
-                            isSmallScreen,
+
+                          _buildProfileDetail(
+                            icon: Icons.monitor_weight,
+                            title: 'Berat',
+                            value: '${babyProfile?.weight ?? 0} kg',
+                            color: const Color(0xFFFFE9C0), // Soft yellow
+                            isSmallScreen: isSmallScreen,
                           ),
-                          _buildInfoRow(
-                            'Jenis Kelamin',
-                            babyProfile?.gender == 'male'
+
+                          _buildProfileDetail(
+                            icon: babyProfile?.gender == 'male'
+                                ? Icons.male
+                                : Icons.female,
+                            title: 'Jenis Kelamin',
+                            value: babyProfile?.gender == 'male'
                                 ? 'Laki-laki'
                                 : 'Perempuan',
-                            isSmallScreen,
+                            color: const Color(0xFFD4E6FE), // Soft blue
+                            isSmallScreen: isSmallScreen,
                           ),
-                          _buildInfoRow(
-                            'Frekuensi Makan',
-                            '${babyProfile?.mealsPerDay ?? 0}x sehari',
-                            isSmallScreen,
+
+                          _buildProfileDetail(
+                            icon: Icons.restaurant,
+                            title: 'Frekuensi Makan',
+                            value: '${babyProfile?.mealsPerDay ?? 0}x sehari',
+                            color: const Color(0xFFD4EDDA), // Soft green
+                            isSmallScreen: isSmallScreen,
                           ),
-                          _buildInfoRow(
-                            'Memiliki Alergi',
-                            babyProfile?.hasAllergy == true ? 'Ya' : 'Tidak',
-                            isSmallScreen,
+
+                          _buildProfileDetail(
+                            icon: Icons.warning_amber_rounded,
+                            title: 'Memiliki Alergi',
+                            value: babyProfile?.hasAllergy == true
+                                ? 'Ya'
+                                : 'Tidak',
+                            color: const Color(0xFFFDD3E7), // Soft pink
+                            isSmallScreen: isSmallScreen,
                           ),
-                          _buildInfoRow(
-                            'Tingkat Aktivitas',
-                            _getActivityLevel(babyProfile?.activityLevel ?? 5),
-                            isSmallScreen,
+
+                          _buildProfileDetail(
+                            icon: _getActivityIcon(
+                                babyProfile?.activityLevel ?? 5),
+                            title: 'Tingkat Aktivitas',
+                            value: _getActivityLevel(
+                                babyProfile?.activityLevel ?? 5),
+                            color: const Color(0xFFDDD3FE), // Soft purple
+                            isSmallScreen: isSmallScreen,
+                            isLast: true,
                           ),
                         ],
                       ),
-                    );
-                  },
-                ),
-              ),
-
-              SizedBox(height: isSmallScreen ? 16 : 24),
-              Padding(
-                padding: EdgeInsets.only(
-                  left: isSmallScreen ? 16 : 24,
-                  right: isSmallScreen ? 16 : 24,
-                  top: isSmallScreen ? 16 : 24,
-                  bottom: padding.bottom +
-                      36,
-                ),
-                child: Column(
-                  children: [
-                    // Edit Profile Button
-                    Container(
-                      width: double.infinity,
-                      height: isSmallScreen ? 52 : 60,
-                      margin: EdgeInsets.only(bottom: isSmallScreen ? 12 : 16),
-                      child: Material(
-                        color: Colors.white,
-                        elevation: 1,
-                        shadowColor: Colors.black.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(10),
-                        child: InkWell(
-                          onTap: () => Get.toNamed(Routes.EDIT_PROFILE),
-                          borderRadius: BorderRadius.circular(10),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: isSmallScreen ? 12 : 16),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Container(
-                                  width: isSmallScreen ? 36 : 42,
-                                  height: isSmallScreen ? 36 : 42,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFFFF8EE),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.edit_outlined,
-                                      color: const Color(0xFFFFB950),
-                                      size: isSmallScreen ? 18 : 20,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: isSmallScreen ? 12 : 16),
-                                const Expanded(
-                                  child: Text(
-                                    'Edit Profile',
-                                    style: TextStyle(
-                                      color: Color(0xFF6F6F6F),
-                                      fontSize: 16,
-                                      fontFamily: 'Signika',
-                                      fontWeight: FontWeight.w400,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                ),
-                                Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: const Color(0xFF6F6F6F),
-                                  size: isSmallScreen ? 14 : 16,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
                     ),
+                  ),
 
-                    // Logout Button
-                    SizedBox(
-                      width: double.infinity,
-                      height: isSmallScreen ? 52 : 60,
-                      child: Material(
-                        color: Colors.white,
-                        elevation: 1,
-                        shadowColor: Colors.black.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(10),
-                        child: InkWell(
+                  SizedBox(height: isSmallScreen ? 24 : 32),
+
+                  // Action buttons with enhanced design
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: isSmallScreen ? 16 : 24,
+                      right: isSmallScreen ? 16 : 24,
+                      bottom: padding.bottom + 36,
+                    ),
+                    child: Column(
+                      children: [
+                        // Edit Profile Button
+                        _buildActionButton(
+                          icon: Icons.edit_outlined,
+                          title: 'Edit Profile',
+                          subtitle: 'Update baby information',
+                          iconColor: const Color(0xFFFFB950),
+                          bgColor: const Color(0xFFFFF8EE),
+                          onTap: () => Get.toNamed(Routes.EDIT_PROFILE),
+                          isSmallScreen: isSmallScreen,
+                        ),
+
+                        SizedBox(height: isSmallScreen ? 16 : 20),
+
+                        // Logout Button
+                        _buildActionButton(
+                          icon: Icons.logout_rounded,
+                          title: 'Keluar',
+                          subtitle: 'Sign out from application',
+                          iconColor: const Color(0xFFFF5C5C),
+                          bgColor: const Color(0xFFFFEEEE),
                           onTap: () async {
                             try {
                               await authService.signOut();
@@ -296,55 +318,147 @@ class _ProfilePageState extends State<ProfilePage> {
                               );
                             }
                           },
-                          borderRadius: BorderRadius.circular(10),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: isSmallScreen ? 12 : 16),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Container(
-                                  width: isSmallScreen ? 36 : 42,
-                                  height: isSmallScreen ? 36 : 42,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFFFEEEE),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.logout_rounded,
-                                      color: const Color(0xFFFF5C5C),
-                                      size: isSmallScreen ? 18 : 20,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: isSmallScreen ? 12 : 16),
-                                const Expanded(
-                                  child: Text(
-                                    'Keluar',
-                                    style: TextStyle(
-                                      color: Color(0xFF6F6F6F),
-                                      fontSize: 16,
-                                      fontFamily: 'Signika',
-                                      fontWeight: FontWeight.w400,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                ),
-                                Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: const Color(0xFF6F6F6F),
-                                  size: isSmallScreen ? 14 : 16,
-                                ),
-                              ],
-                            ),
-                          ),
+                          isSmallScreen: isSmallScreen,
                         ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildProfileDetail({
+    required IconData icon,
+    required String title,
+    required String value,
+    required Color color,
+    required bool isSmallScreen,
+    bool isLast = false,
+  }) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: isLast ? 0 : (isSmallScreen ? 16 : 20)),
+      child: Row(
+        children: [
+          // Icon in colored circle
+          Container(
+            width: isSmallScreen ? 40 : 46,
+            height: isSmallScreen ? 40 : 46,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.7),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: Colors.white,
+              size: isSmallScreen ? 18 : 20,
+            ),
+          ),
+          SizedBox(width: isSmallScreen ? 12 : 16),
+          // Title and value
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                    letterSpacing: 0.3,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF2E3E5C),
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color iconColor,
+    required Color bgColor,
+    required VoidCallback onTap,
+    required bool isSmallScreen,
+  }) {
+    return Material(
+      color: Colors.white,
+      elevation: 1,
+      shadowColor: Colors.black.withOpacity(0.05),
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: isSmallScreen ? 46 : 52,
+                height: isSmallScreen ? 46 : 52,
+                decoration: BoxDecoration(
+                  color: bgColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: Icon(
+                    icon,
+                    color: iconColor,
+                    size: isSmallScreen ? 22 : 24,
+                  ),
+                ),
+              ),
+              SizedBox(width: isSmallScreen ? 14 : 18),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: Color(0xFF2E3E5C),
+                        fontSize: 17,
+                        fontFamily: 'Signika',
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 13,
+                        fontFamily: 'Signika',
+                        letterSpacing: 0.2,
                       ),
                     ),
                   ],
                 ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                color: Colors.grey[400],
+                size: isSmallScreen ? 16 : 18,
               ),
             ],
           ),
@@ -353,31 +467,14 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildInfoRow(String label, String value, bool isSmallScreen) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: isSmallScreen ? 12 : 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: isSmallScreen ? 12 : 14,
-              color: Colors.grey[600],
-              letterSpacing: 0.5,
-            ),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: isSmallScreen ? 12 : 14,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 0.5,
-            ),
-          ),
-        ],
-      ),
-    );
+  IconData _getActivityIcon(double level) {
+    if (level <= 3) {
+      return Icons.nightlight_outlined;
+    } else if (level <= 7) {
+      return Icons.directions_walk;
+    } else {
+      return Icons.directions_run;
+    }
   }
 
   String _getActivityLevel(double level) {
