@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:growell_app/utils/food_utils.dart';
-import 'package:growell_app/widget%20daily/nutrient_summary_box.dart';
+import 'package:growell_app/widget_daily/nutrient_summary_box.dart';
 
 import 'app_styles.dart';
 

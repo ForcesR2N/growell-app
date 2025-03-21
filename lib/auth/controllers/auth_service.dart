@@ -2,11 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:growell_app/routes/app_pages.dart';
-
+import 'package:growell_app/service/error_handling_service.dart';
 class AuthService extends GetxService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+  final ErrorHandlingService _errorHandler = Get.find<ErrorHandlingService>(); 
   final Rx<User?> user = Rx<User?>(null);
 
   @override
@@ -28,6 +28,8 @@ class AuthService extends GetxService {
           Get.offAllNamed(Routes.ONBOARDING);
         }
       } catch (e) {
+        // Use error handler
+        _errorHandler.handleError(e, fallbackMessage: 'Gagal memverifikasi profil');
         Get.offAllNamed(Routes.ONBOARDING);
       }
     }
@@ -42,6 +44,8 @@ class AuthService extends GetxService {
         Get.offAndToNamed(Routes.ONBOARDING);
       }
     } catch (e) {
+      // Use error handler
+      _errorHandler.handleError(e, fallbackMessage: 'Gagal memverifikasi profil');
       Get.offAndToNamed(Routes.ONBOARDING);
     }
   }
@@ -52,8 +56,8 @@ class AuthService extends GetxService {
         email: email,
         password: password,
       );
-    } on FirebaseAuthException {
-      rethrow;
+    } on FirebaseAuthException catch (e) {
+      throw e; // Let the calling code handle auth exceptions with the error handler
     } catch (e) {
       throw Exception('Terjadi kesalahan saat login');
     }
@@ -71,8 +75,8 @@ class AuthService extends GetxService {
       }
 
       return userCredential;
-    } on FirebaseAuthException {
-      rethrow;
+    } on FirebaseAuthException catch (e) {
+      throw e; // Let the calling code handle auth exceptions with the error handler
     } catch (e) {
       throw Exception('Terjadi kesalahan saat mendaftar');
     }
@@ -96,6 +100,7 @@ class AuthService extends GetxService {
       final doc = await _firestore.collection('babyProfiles').doc(userId).get();
       return doc.exists;
     } catch (e) {
+      _errorHandler.handleError(e, fallbackMessage: 'Gagal memeriksa profil');
       return false;
     }
   }
@@ -104,6 +109,7 @@ class AuthService extends GetxService {
     try {
       await _auth.signOut();
     } catch (e) {
+      _errorHandler.handleError(e, fallbackMessage: 'Gagal keluar dari aplikasi');
       throw Exception('Gagal keluar dari aplikasi');
     }
   }

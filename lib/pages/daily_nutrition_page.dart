@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:growell_app/controllers/nutrition_requirement_service.dart';
+import 'package:growell_app/controllers/daily_nutrition_controller.dart';
 import 'package:growell_app/models/food_nutrition_model.dart';
-import 'package:growell_app/widget%20daily/app_styles.dart';
+import 'package:growell_app/widget_daily/app_styles.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 
 class DailyNutritionPage extends StatefulWidget {
-  const DailyNutritionPage({Key? key}) : super(key: key);
+  const DailyNutritionPage({super.key});
 
   @override
   State<DailyNutritionPage> createState() => _DailyNutritionPageState();

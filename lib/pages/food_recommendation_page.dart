@@ -127,8 +127,8 @@ class _FoodRecommendationPageState extends State<FoodRecommendationPage>
                     labelColor: Color(0xFF91C788),
                     unselectedLabelColor: Colors.grey,
                     tabs: const [
-                      Tab(text: 'OVERVIEW'),
-                      Tab(text: 'SCHEDULE'),
+                      Tab(text: 'RINGKASAN'),
+                      Tab(text: 'JADWAL'),
                     ],
                   ),
                 ),

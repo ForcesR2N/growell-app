@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:growell_app/auth/controllers/auth_service.dart';
+import 'package:growell_app/service/error_handling_service.dart';
+import 'package:growell_app/service/validation_service.dart';
 import '../models/baby_profile_model.dart';
 import '../service/storage_service.dart';
 import '../routes/app_pages.dart';
@@ -8,6 +10,8 @@ import '../routes/app_pages.dart';
 class OnboardingController extends GetxController {
   final AuthService _authService = Get.find();
   final StorageService _storageService = Get.find();
+  final ErrorHandlingService _errorHandler = Get.find<ErrorHandlingService>();
+  final ValidationService _validationService = Get.find<ValidationService>();
 
   final pageController = PageController();
   final currentPage = 0.obs;
@@ -26,10 +30,9 @@ class OnboardingController extends GetxController {
 
   void nextPage() {
     if (!validateCurrentPage()) {
-      Get.snackbar(
+      _errorHandler.showWarningSnackbar(
         'Validasi',
         'Mohon lengkapi data dengan benar',
-        snackPosition: SnackPosition.BOTTOM,
       );
       return;
     }
@@ -53,79 +56,55 @@ class OnboardingController extends GetxController {
     }
   }
 
-  void showValidationError(String message) {
-    Get.snackbar(
-      'Validasi',
-      message,
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.red[100],
-      colorText: Colors.red[900],
-      duration: const Duration(seconds: 2),
-      margin: const EdgeInsets.all(10),
-      borderRadius: 10,
-      isDismissible: true,
-      icon: const Icon(
-        Icons.error_outline,
-        color: Colors.red,
-      ),
-    );
-  }
-
   bool validateCurrentPage() {
     clearErrors();
 
     switch (currentPage.value) {
       case 0:
-        if (name.value.isEmpty) {
-          nameError.value = 'Nama tidak boleh kosong';
-          return false;
-        }
-        return true;
+        nameError.value = _validationService.validateBabyName(name.value);
+        return nameError.value.isEmpty;
 
       case 1: // Validasi usia
-        if (age.value <= 0) {
-          ageError.value = 'Masukkan usia bayi yang valid';
-          showValidationError('Masukkan usia bayi yang valid');
-          return false;
-        }
-        if (age.value < 1) {
-          ageError.value = 'Usia minimal 1 bulan';
-          showValidationError('Usia minimal 1 bulan');
-          return false;
-        }
-        if (age.value > 24) {
-          ageError.value = 'Usia maksimal 24 bulan';
-          showValidationError('Usia maksimal 24 bulan');
+        ageError.value = _validationService.validateBabyAge(age.value.toString());
+        if (ageError.value.isNotEmpty) {
+          _showValidationError(ageError.value);
           return false;
         }
         return true;
 
       case 2:
-        if (weight.value <= 0) {
-          weightError.value = 'Berat badan harus lebih dari 0 kg';
-          return false;
-        }
-        if (weight.value > 30) {
-          weightError.value = 'Berat badan tidak valid';
-          return false;
-        }
-        return true;
+        weightError.value = _validationService.validateBabyWeight(weight.value.toString());
+        return weightError.value.isEmpty;
 
       case 3: // Gender
         return true;
 
       case 4: // Meals per day
-        return mealsPerDay.value >= 2 && mealsPerDay.value <= 6;
+        final mealsError = _validationService.validateMealsPerDay(mealsPerDay.value);
+        if (mealsError.isNotEmpty) {
+          _showValidationError(mealsError);
+          return false;
+        }
+        return true;
 
       case 5: // Allergy
         return true;
 
       case 6: // Activity level
-        return activityLevel.value >= 1 && activityLevel.value <= 10;
+        final activityError = _validationService.validateActivityLevel(activityLevel.value);
+        if (activityError.isNotEmpty) {
+          _showValidationError(activityError);
+          return false;
+        }
+        return true;
 
       default:
         return false;
     }
+  }
+
+  void _showValidationError(String message) {
+    _errorHandler.showWarningSnackbar('Validasi', message);
   }
 
   void clearErrors() {
@@ -148,15 +127,13 @@ class OnboardingController extends GetxController {
       );
 
       await _storageService.saveBabyProfile(profile);
+      _errorHandler.showSuccessSnackbar(
+        'Sukses', 
+        'Profil bayi berhasil disimpan'
+      );
       Get.offAllNamed(Routes.HOME);
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Terjadi kesalahan saat menyimpan profil',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red[100],
-        colorText: Colors.red[900],
-      );
+      _errorHandler.handleError(e, fallbackMessage: 'Terjadi kesalahan saat menyimpan profil');
     }
   }
 

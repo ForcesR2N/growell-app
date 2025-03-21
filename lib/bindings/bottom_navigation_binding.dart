@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:growell_app/controllers/daily_nutrition_controller.dart';
 import 'package:growell_app/controllers/navigation_controller.dart';
 import 'package:growell_app/controllers/nutrition_requirement_service.dart';
 

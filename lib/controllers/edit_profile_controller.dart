@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:growell_app/auth/controllers/auth_service.dart';
 import 'package:growell_app/models/baby_profile_model.dart';
+import 'package:growell_app/service/error_handling_service.dart';
 import 'package:growell_app/service/storage_service.dart';
+import 'package:growell_app/service/validation_service.dart';
 
 class EditProfileController extends GetxController {
   final AuthService _authService = Get.find();
   final StorageService _storageService = Get.find();
+  final ErrorHandlingService _errorHandler = Get.find<ErrorHandlingService>();
+  final ValidationService _validationService = Get.find<ValidationService>();
 
   final name = ''.obs;
   final age = 0.obs;
@@ -59,24 +63,24 @@ class EditProfileController extends GetxController {
     bool isValid = true;
     clearErrors();
 
-    if (name.value.isEmpty) {
-      nameError.value = 'Nama tidak boleh kosong';
+    nameError.value = _validationService.validateBabyName(name.value);
+    if (nameError.value.isNotEmpty) isValid = false;
+
+    ageError.value = _validationService.validateBabyAge(age.value.toString());
+    if (ageError.value.isNotEmpty) isValid = false;
+
+    weightError.value = _validationService.validateBabyWeight(weight.value.toString());
+    if (weightError.value.isNotEmpty) isValid = false;
+
+    final mealsError = _validationService.validateMealsPerDay(mealsPerDay.value);
+    if (mealsError.isNotEmpty) {
+      _errorHandler.showWarningSnackbar('Validasi', mealsError);
       isValid = false;
     }
 
-    if (age.value <= 0) {
-      ageError.value = 'Masukkan usia bayi yang valid';
-      isValid = false;
-    } else if (age.value > 24) {
-      ageError.value = 'Usia maksimal 24 bulan';
-      isValid = false;
-    }
-
-    if (weight.value <= 0) {
-      weightError.value = 'Berat badan harus lebih dari 0 kg';
-      isValid = false;
-    } else if (weight.value > 30) {
-      weightError.value = 'Berat badan tidak valid';
+    final activityError = _validationService.validateActivityLevel(activityLevel.value);
+    if (activityError.isNotEmpty) {
+      _errorHandler.showWarningSnackbar('Validasi', activityError);
       isValid = false;
     }
 
@@ -91,11 +95,9 @@ class EditProfileController extends GetxController {
 
   Future<void> updateProfile() async {
     if (!validateForm()) {
-      Get.snackbar(
+      _errorHandler.showWarningSnackbar(
         'Validasi',
         'Mohon lengkapi data dengan benar',
-        backgroundColor: Colors.red[100],
-        colorText: Colors.red[900],
       );
       return;
     }
@@ -114,20 +116,13 @@ class EditProfileController extends GetxController {
       );
 
       await _storageService.saveBabyProfile(profile);
-      Get.back();
-      Get.snackbar(
+      _errorHandler.showSuccessSnackbar(
         'Sukses',
         'Profil berhasil diperbarui',
-        backgroundColor: Colors.green[100],
-        colorText: Colors.green[900],
       );
+      Get.back();
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal memperbarui profil',
-        backgroundColor: Colors.red[100],
-        colorText: Colors.red[900],
-      );
+      _errorHandler.handleError(e, fallbackMessage: 'Gagal memperbarui profil');
     } finally {
       isLoading.value = false;
     }
